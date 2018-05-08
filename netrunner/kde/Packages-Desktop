@@ -356,7 +356,7 @@ artwork-color-scheme-carbon
 artwork-lnf-theme-netrunner-rolling
 artwork-netrunner-icons
 artwork-numarceeze-icons
-artwork-sddm-simple
+#artwork-sddm-simple
 artwork-wallpapers-netrunner-rolling-201801
 artwork-wallpapers-netrunner-rolling-base
 artwork-whiteclassicia-cursor
@@ -413,6 +413,10 @@ plasma5-applets-simplemenu
 plasma5-applets-volumewin7mixer
 icedtea-web
 skypeforlinux-stable-bin
+
+## Wayland testing packages
+artwork-sddm-breeze-new
+plasma-wayland-session
 
 ## KDE PIM
 #akonadiconsole
