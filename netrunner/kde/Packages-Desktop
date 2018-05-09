@@ -346,9 +346,9 @@ xdg-utils
 manjaro-hotfixes
 
 ## Flatpak support
-#>extra flatpak
-#>extra xdg-desktop-portal
-#>extra xdg-desktop-portal-kde
+# >extra flatpak
+# >extra xdg-desktop-portal
+# >extra xdg-desktop-portal-kde
 
 ## Artwork packages
 artwork-audacious
@@ -356,7 +356,7 @@ artwork-color-scheme-carbon
 artwork-lnf-theme-netrunner-rolling
 artwork-netrunner-icons
 artwork-numarceeze-icons
-#artwork-sddm-simple
+# artwork-sddm-simple
 artwork-wallpapers-netrunner-rolling-201801
 artwork-wallpapers-netrunner-rolling-base
 artwork-whiteclassicia-cursor
@@ -419,20 +419,20 @@ artwork-sddm-breeze-new
 plasma-wayland-session
 
 ## KDE PIM
-#akonadiconsole
-#kaddressbook
-#kalarm
-#kmail
-#knotes
-#konsolekalendar
-#kontact
-#korganizer
+# akonadiconsole
+# kaddressbook
+# kalarm
+# kmail
+# knotes
+# konsolekalendar
+# kontact
+# korganizer
 
 ## KDE Telepathy
-#telepathy-kde-meta
-#telepathy-gabble
-#telepathy-farstream
-#telepathy-haze
-#telepathy-idle
-#telepathy-morse
-#telepathy-rakia
+# telepathy-kde-meta
+# telepathy-gabble
+# telepathy-farstream
+# telepathy-haze
+# telepathy-idle
+# telepathy-morse
+# telepathy-rakia
