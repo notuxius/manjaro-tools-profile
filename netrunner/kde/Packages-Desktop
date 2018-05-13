@@ -414,10 +414,6 @@ plasma5-applets-volumewin7mixer
 icedtea-web
 skypeforlinux-stable-bin
 
-## Wayland testing packages
-artwork-sddm-breeze-new
-plasma-wayland-session
-
 ## KDE PIM
 # akonadiconsole
 # kaddressbook
@@ -436,3 +432,8 @@ plasma-wayland-session
 # telepathy-idle
 # telepathy-morse
 # telepathy-rakia
+
+## Wayland testing packages
+artwork-sddm-breeze-new
+plasma-wayland-session
+drkonqi
