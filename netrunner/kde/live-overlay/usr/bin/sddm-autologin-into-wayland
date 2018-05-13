@@ -10,6 +10,7 @@ manjaro_live_sh_file=$(eval echo /usr/lib/manjaro-tools/util-live.sh)
 err_text="Could not make modifications in Autorun section\nExiting...\n"
 err_live_text="Could not make modifications in manjaro-live-base package files\n"
 
+# overwrite setting of SDDM autologin - from Xorg plasma.desktop into Wayland session - in manjaro-live-base package files
 if [ -w $manjaro_live_map_file ]; then
     sed -i 's|plasma:startkde|plasmawayland:startplasmacompositor|' $manjaro_live_map_file || { printf "$err_live_text";}
 else
@@ -23,8 +24,6 @@ else
 fi
 
 if [ -w $sddm_conf_file ]; then
-    # overwrite setting of SDDM autologin into Xorg plasma.desktop session from manjaro-live-base package
-
     # substitute any session with Wayland as a precaution
     sed -i 's/^Session=.*/Session=plasmawayland.desktop/' $sddm_conf_file || { printf "$err_text"; exit 1; }
     printf "Modified Session Autorun section\n"
@@ -33,9 +32,8 @@ if [ -w $sddm_conf_file ]; then
     printf "Modified User Autorun section\n"
     
     # ensure SDDM config file isn't modified by LiveMedia script at startup
-    # chattr +i /etc/sddm.conf || { printf "$err_text" ; exit 1; }
+    # chattr +i /etc/sddm.conf || { printf "$err_text"; exit 1; }
     # printf "Removed and locked write permission for SDDM config file\n"
-    
 else
     printf "SDDM configuration file cannot be written\nExiting...\n"
     exit 1
