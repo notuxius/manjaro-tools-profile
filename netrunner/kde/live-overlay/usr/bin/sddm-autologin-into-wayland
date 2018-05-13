@@ -1,39 +1,40 @@
 #!/bin/bash
 
-#if [[ $EUID -ne 0 ]]; then
-#   echo "This script must be run as root" 
-#   exit 1
-#fi
-
-# set -x
-
+# TODO add checking of sed success completion
+# https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
+    
 sddm_conf_file=$(eval echo /etc/sddm.conf)
+manjaro_live_map_file=$(eval echo /usr/share/manjaro-tools/desktop.map)
+manjaro_live_sh_file=$(eval echo /usr/lib/manjaro-tools/util-live.sh)
 
 err_text="Could not make modifications in Autorun section\nExiting...\n"
+err_live_text="Could not make modifications in manjaro-live-base package files\n"
+
+if [ -w $manjaro_live_map_file ]; then
+    sed -i 's|plasma:startkde|plasmawayland:startplasmacompositor|' $manjaro_live_map_file || { printf "$err_live_text";}
+else
+    printf "Manjaro tools desktop.map file cannot be written\nExiting...\n"
+fi
+
+if [ -w $manjaro_live_sh_file ]; then
+    sed -i 's|xs=/usr/share/xsessions|xs=/usr/share/wayland-sessions|' $manjaro_live_sh_file || { printf "$err_live_text";}
+else
+    printf "Manjaro tools util-live.sh file cannot be written\nExiting...\n"
+fi
 
 if [ -w $sddm_conf_file ]; then
-    # substitute any session with Wayland
-    # TODO add checking of sed success completion
-    # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
-    sed -i 's/^Session=.*/Session=plasmawayland.desktop/' $sddm_conf_file || { printf "$err_text" ; exit 1; }
+    # overwrite setting of SDDM autologin into Xorg plasma.desktop session from manjaro-live-base package
+
+    # substitute any session with Wayland as a precaution
+    sed -i 's/^Session=.*/Session=plasmawayland.desktop/' $sddm_conf_file || { printf "$err_text"; exit 1; }
     printf "Modified Session Autorun section\n"
     
-    sed -i 's/^User=.*/User=netrunner/' $sddm_conf_file || { printf "$err_text" ; exit 1; }
+    sed -i 's/^User=.*/User=netrunner/' $sddm_conf_file || { printf "$err_text"; exit 1; }
     printf "Modified User Autorun section\n"
     
     # ensure SDDM config file isn't modified by LiveMedia script at startup
     # chattr +i /etc/sddm.conf || { printf "$err_text" ; exit 1; }
     # printf "Removed and locked write permission for SDDM config file\n"
-    
-    # block setting of SDDM autologin into Xorg plasma.desktop session in manjaro-live-base package
-    # TODO make better string matching
-    sed -i '172s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '173s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '174s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '175s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '176s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '177s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
-    sed -i '178s/^/# /' /usr/lib/manjaro-tools/util-live.sh || { printf "$err_text" ; exit 1; }
     
 else
     printf "SDDM configuration file cannot be written\nExiting...\n"
