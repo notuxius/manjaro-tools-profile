@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# fix Calamares launch
+xhost +local: 
+
+# fix Grub Customizer launch
+sed -i "s|Exec=grub-customizer|Exec=kdesu grub-customizer|" /usr/share/applications/grub-customizer.desktop
+
+# fix KSystemLog launch
+sed -i "s|X-KDE-SubstituteUID=true|X-KDE-SubstituteUID=false|" /usr/share/applications/org.kde.ksystemlog.desktop
