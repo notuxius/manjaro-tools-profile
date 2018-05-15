@@ -4,8 +4,12 @@
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
 
 # fix Calamares launch
-xhost +local: 
-
+if [[ -x /usr/bin/xhost ]]; then
+    xhost +local:
+else
+    printf "Xhost binary could not be executed.\nSkipping modifying access control to local users...\n"
+fi
+    
 err_graph_grub_cust_text="Could not make modifications in Grub Customizer desktop file\n"
 err_graph_ksystemlog_text="Could not make modifications in KSystemLog desktop file\n"
 
