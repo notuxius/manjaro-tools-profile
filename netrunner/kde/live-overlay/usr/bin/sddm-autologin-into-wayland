@@ -12,13 +12,13 @@ err_live_text="Could not make modifications in manjaro-live-base package files\n
 
 # overwrite setting of SDDM autologin - from Xorg plasma.desktop into Wayland session - in manjaro-live-base package files
 if [ -w $manjaro_live_map_file ]; then
-    sed -i "s|plasma:startkde|plasmawayland:startplasmacompositor|" $manjaro_live_map_file || { printf "$err_live_text";}
+    sed -i "s|plasma:startkde|plasmawayland:startplasmacompositor|" $manjaro_live_map_file || { printf "$err_live_text"; }
 else
     printf "Manjaro tools desktop.map file cannot be written\nExiting...\n"
 fi
 
 if [ -w $manjaro_live_sh_file ]; then
-    sed -i "s|xs=/usr/share/xsessions|xs=/usr/share/wayland-sessions|" $manjaro_live_sh_file || { printf "$err_live_text";}
+    sed -i "s|xs=/usr/share/xsessions|xs=/usr/share/wayland-sessions|" $manjaro_live_sh_file || { printf "$err_live_text"; }
 else
     printf "Manjaro tools util-live.sh file cannot be written\nExiting...\n"
 fi
