@@ -31,6 +31,3 @@ xf86-video-vmware
 xf86-video-voodoo
 grub-theme-live-netrunner
 netrunner-calamares-branding
-
-## Wayland testing packages
-xorg-xhost

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# fix Calamares and possibly other apps launch on Wayland
+if [[ -x /usr/bin/xhost && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    xhost +local:
+else
+    printf "Xhost binary could not be executed.\nSkipping modifying access control to local users...\n"
+fi
+    
+err_graph_grub_cust_text="Could not make modifications in Grub Customizer desktop file\n"
+
+# fix Grub Customizer launch from terminal
+if [ -z "${BASH_ALIASES[grub-customizer]}" ]; then
+    printf '\nalias grub-customizer="kdesu grub-customizer"\n' >> ~/.bashrc || { printf "$err_graph_grub_cust_text"; }
+fi
