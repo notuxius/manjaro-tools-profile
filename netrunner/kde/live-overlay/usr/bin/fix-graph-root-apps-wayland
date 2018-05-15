@@ -1,10 +1,16 @@
 #!/bin/bash
 
+# TODO add checking of sed success completion
+# https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
+
 # fix Calamares launch
 xhost +local: 
 
+err_graph_grub_cust_text="Could not make modifications in Grub Customizer desktop file\n"
+err_graph_ksystemlog_text="Could not make modifications in KSystemLog desktop file\n"
+
 # fix Grub Customizer launch
-sed -i "s|Exec=grub-customizer|Exec=kdesu grub-customizer|" /usr/share/applications/grub-customizer.desktop
+sed -i "s|Exec=grub-customizer|Exec=kdesu grub-customizer|" /usr/share/applications/grub-customizer.desktop || { printf "$err_graph_grub_cust_text"; }
 
 # fix KSystemLog launch
-sed -i "s|X-KDE-SubstituteUID=true|X-KDE-SubstituteUID=false|" /usr/share/applications/org.kde.ksystemlog.desktop
+sed -i "s|X-KDE-SubstituteUID=true|X-KDE-SubstituteUID=false|" /usr/share/applications/org.kde.ksystemlog.desktop || { printf "$err_graph_ksystemlog_text"; }
