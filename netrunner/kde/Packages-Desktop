@@ -6,7 +6,7 @@ networkmanager-openvpn
 networkmanager-pptp
 networkmanager-vpnc
 networkmanager-dispatcher-ntpd
-nss-mdns # NSS support for mDNS (optdepend for avahi)
+nss-mdns  # NSS support for mDNS (optdepend for avahi)
 ntp
 mobile-broadband-provider-info
 modemmanager
@@ -78,6 +78,7 @@ pkg-config
 >extra patchutils
 >extra subversion
 yaourt
+yay
 
 ## Fonts
 # cantarell-fonts        # Installed as gnome-themes-standard dependency
@@ -113,8 +114,8 @@ discover
 packagekit-qt5
 octopi
 # octopi-notifier-frameworks
-# octopi-cachecleaner
-# octopi-repoeditor
+octopi-cachecleaner
+octopi-repoeditor
 
 ## Printing
 >extra cups
@@ -175,7 +176,7 @@ gnome-icon-theme
 >extra oxygen-kde4
 >extra oxygen-icons
 # plasma5-themes-breath  # Default
-# sddm-breath-theme  # Default
+# sddm-breath-theme      # Default
 oxygen-gtk2
 gnome-icon-theme-extras
 
@@ -188,7 +189,7 @@ perl-gtk2-trayicon
 
 ## KDE Applications
 ark
-# >extra digikam
+>extra digikam
 dolphin
 dolphin-plugins
 # >extra filelight
@@ -196,7 +197,7 @@ dolphin-plugins
 kate
 kcalc
 >extra keditbookmarks
-# kfind
+kfind
 kdeconnect
 okular
 # >extra kdenetwork-kget
@@ -205,7 +206,7 @@ kdenetwork-filesharing
 kde-servicemenus-rootactions
 khelpcenter
 kio-extras
-# >extra kleopatra
+>extra kleopatra
 konsole
 # konversation
 ksystemlog
@@ -225,7 +226,7 @@ p7zip  # 7Z format support
 unrar  # RAR format support
 
 ## Optional dependency for digikam
-# >extra kipi-plugins   # export to various online services
+>extra kipi-plugins     # export to various online services
 # >extra hugin            # panorama tool
 
 ## Optional dependencies for dolphin
@@ -256,7 +257,7 @@ sshfs  # remote filesystem browser
 >extra dvdauthor        # for creation of DVD
 >extra dvgrab           # for firewire capture
 >extra recordmydesktop  # for screen capture
-#>extra vlc-nightly # for DVD preview, needs xine-ui or vlc, vlc is in "Applications" section
+#>extra vlc # for DVD preview, needs xine-ui or vlc, vlc is in "Applications" section
 >extra movit            # for GPU video processing
 
 ## Optional dependencies for okular
@@ -275,18 +276,18 @@ imagewriter
 inxi
 >extra krita
 >extra firefox
-# >basic qupzilla
+>extra falkon
 >extra flashplugin
->extra libreoffice-still
+>extra libreoffice-fresh
 # manjaro-hello
 manjaro-settings-manager-kcm
 manjaro-settings-manager-knotifier
 powertop
-# >extra qbittorrent
+>extra qbittorrent
 screenfetch
 systemd-kcm
 >extra thunderbird
-# vlc-nightly
+>extra vlc
 yakuake
 audacious
 gimp
@@ -298,11 +299,11 @@ pidgin
 smplayer
 yarock-qt5
 mpv
-transmission-qt
+# transmission-qt
 virtualbox
 virtualbox-guest-iso
 KERNEL-virtualbox-host-modules
-x11vnc
+# x11vnc
 vokoscreen
 
 ## Optional dependencis for cantata
@@ -346,9 +347,9 @@ xdg-utils
 manjaro-hotfixes
 
 ## Flatpak support
-# >extra flatpak
-# >extra xdg-desktop-portal
-# >extra xdg-desktop-portal-kde
+>extra flatpak
+>extra xdg-desktop-portal
+>extra xdg-desktop-portal-kde
 
 ## Artwork packages
 artwork-audacious
@@ -437,5 +438,17 @@ skypeforlinux-stable-bin
 artwork-sddm-breeze-new
 plasma-wayland-session
 drkonqi
-kompare
+strace
 xorg-xhost
+kodi
+telegram-desktop
+ktorrent
+chromium
+kdevelop-pg-qt
+kdevelop-php
+kdevelop-python
+atom
+krusader
+kompare
+latte-dock
+gnome-disk-utility
