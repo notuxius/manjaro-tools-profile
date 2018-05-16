@@ -33,6 +33,9 @@ err_prepare_text="Could not make modifications in user's home manjaro tools conf
 sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || { printf "$err_prepare_text";}
 
 # change iso label from Manjaro into Netrunner
-sed -i 's|# dist_branding="MJRO"|dist_branding="NTRR"|' $target_conf_file || { printf "$err_prepare_text";}
+sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text";}
+
+# change distribution release to year.month.day.hour format
+sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text";}
 
 echo 'Done.'
