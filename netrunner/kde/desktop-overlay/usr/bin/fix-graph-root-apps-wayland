@@ -2,14 +2,19 @@
 
 # fix Calamares and possibly other apps launch on Wayland
 if [[ -x /usr/bin/xhost && "$XDG_SESSION_TYPE" == "wayland" ]]; then
-    xhost +local:
+    xhost +local:$(whoami) > /dev/null 2>&1
 else
     printf "Xhost binary could not be executed.\nSkipping modifying access control to local users...\n"
 fi
     
-err_graph_grub_cust_text="Could not make modifications in Grub Customizer desktop file\n"
+err_graph_text="Could not make modifications in current user's .bashrc file\n"
 
 # fix Grub Customizer launch from terminal
-if [ -z "${BASH_ALIASES[grub-customizer]}" ]; then
-    printf '\nalias grub-customizer="kdesu grub-customizer"\n' >> ~/.bashrc || { printf "$err_graph_grub_cust_text"; }
+if [[ -z "${BASH_ALIASES[grub-customizer]}" ]]; then
+    printf '\nalias grub-customizer="kdesu grub-customizer"\n' >> ~/.bashrc || { printf "$err_graph_text"; }
+fi
+
+# fix VirtualBox launch from terminal on Wayland
+if [[ -z "${BASH_ALIASES[virtualbox]}" && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    printf '\nalias virtualbox="QT_QPA_PLATFORM=xcb virtualbox"\n' >> ~/.bashrc || { printf "$err_graph_text"; }
 fi
