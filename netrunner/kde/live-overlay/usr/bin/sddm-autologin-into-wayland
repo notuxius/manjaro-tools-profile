@@ -2,6 +2,8 @@
 
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
+
+# TODO add echos about current operations - like in prepare testing config file
     
 sddm_conf_file=$(eval echo /etc/sddm.conf)
 manjaro_live_map_file=$(eval echo /usr/share/manjaro-tools/desktop.map)
@@ -34,3 +36,6 @@ else
     printf "SDDM configuration file cannot be written\nExiting...\n"
     exit 1
 fi
+
+echo 'Done.'
+exit 0

@@ -1,20 +1,27 @@
 #!/bin/bash
 
-# fix Calamares and possibly other apps launch on Wayland
-if [[ -x /usr/bin/xhost && "$XDG_SESSION_TYPE" == "wayland" ]]; then
-    xhost +local:$(whoami) > /dev/null 2>&1
-else
-    printf "Xhost binary could not be executed.\nSkipping modifying access control to local users...\n"
-fi
-    
+# TODO add echos about current operations - like in prepare testing config file
+
 err_graph_text="Could not make modifications in current user's .bashrc file\n"
 
-# fix Grub Customizer launch from terminal
-if [[ -z "${BASH_ALIASES[grub-customizer]}" ]]; then
+# fix Calamares, Grub Customizer (and possibly other apps) launch on Wayland
+if [[ -x /usr/bin/xhost && ! $(grep -Fq "xhost +local:\$(whoami) > /dev/null 2>&1" ~/.bashrc) && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    xhost +local:$(whoami) > /dev/null 2>&1
+fi
+
+# fix Grub Customizer launch from terminal on Wayland
+if [[ -x /usr/bin/grub-customizer && ! $(grep "alias grub-customizer=" ~/.bashrc) && "$XDG_SESSION_TYPE" == "wayland" ]]; then
     printf '\nalias grub-customizer="kdesu grub-customizer"\n' >> ~/.bashrc || { printf "$err_graph_text"; }
 fi
 
-# fix VirtualBox launch from terminal on Wayland
-if [[ -z "${BASH_ALIASES[virtualbox]}" && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+# fix VirtualBox (virtualbox) launch from terminal on Wayland
+if [[ -x /usr/bin/VirtualBox && ! $(grep "alias VirtualBox=" ~/.bashrc) && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    printf '\nalias VirtualBox="QT_QPA_PLATFORM=xcb VirtualBox"\n' >> ~/.bashrc || { printf "$err_graph_text"; }
+fi
+
+if [[ -x /usr/bin/virtualbox && ! $(grep "alias virtualbox=" ~/.bashrc) && "$XDG_SESSION_TYPE" == "wayland" ]]; then
     printf '\nalias virtualbox="QT_QPA_PLATFORM=xcb virtualbox"\n' >> ~/.bashrc || { printf "$err_graph_text"; }
 fi
+
+echo 'Done.'
+exit 0

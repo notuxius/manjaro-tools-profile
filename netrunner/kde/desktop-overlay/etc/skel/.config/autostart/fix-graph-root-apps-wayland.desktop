@@ -1,6 +1,0 @@
-[Desktop Entry]
-Name=fix-graph-root-apps-wayland
-Comment=Fix graphical root applications on Wayland
-Exec=/usr/bin/fix-graph-root-apps-wayland
-Terminal=false
-Type=Application
