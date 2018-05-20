@@ -1,0 +1,10 @@
+[Unit]
+Description=LiveMedia Autologin into Wayland Session
+Before=systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/autologin-into-wayland
+
+[Install]
+WantedBy=multi-user.target
