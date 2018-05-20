@@ -2,38 +2,58 @@
 
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
-
-# TODO add echos about current operations - like in prepare testing config file
     
 sddm_conf_file=$(eval echo /etc/sddm.conf)
+calamares_module_grub_config=$(eval echo /usr/lib/calamares/modules/grubcfg/main.py)
+calamares_module_dm_config=$(eval echo /usr/lib/calamares/modules/displaymanager/main.py)
 manjaro_live_map_file=$(eval echo /usr/share/manjaro-tools/desktop.map)
 manjaro_live_sh_file=$(eval echo /usr/lib/manjaro-tools/util-live.sh)
 
-err_text="Could not make modifications in Autorun section\nExiting...\n"
-err_live_text="Could not make modifications in manjaro-live-base package files\n"
+err_sddm_text="Could not make modifications in Autorun section\n"
+err_manj_live_text="Could not make modifications in manjaro-live-base package files\n"
+err_calamares_text="Could not make modifications in Calamares modules configuration/n"
 
 # overwrite setting of SDDM autologin - from Xorg plasma.desktop into Wayland session - in manjaro-live-base package files
 if [ -w $manjaro_live_map_file ]; then
-    sed -i "s|plasma:startkde|plasmawayland:startplasmacompositor|" $manjaro_live_map_file || { printf "$err_live_text"; }
+    sed -i "s|plasma:startkde|plasmawayland:startplasmacompositor|" $manjaro_live_map_file || { printf "$err_manj_live_text"; }
 else
-    printf "Manjaro tools desktop.map file cannot be written\nExiting...\n"
+    printf "Manjaro tools desktop.map file cannot be written\n"
 fi
 
 if [ -w $manjaro_live_sh_file ]; then
-    sed -i "s|xs=/usr/share/xsessions|xs=/usr/share/wayland-sessions|" $manjaro_live_sh_file || { printf "$err_live_text"; }
+    sed -i "s|xs=/usr/share/xsessions|xs=/usr/share/wayland-sessions|" $manjaro_live_sh_file || { printf "$err_manj_live_text"; }
 else
-    printf "Manjaro tools util-live.sh file cannot be written\nExiting...\n"
+    printf "Manjaro tools util-live.sh file cannot be written\n"
 fi
 
 if [ -w $sddm_conf_file ]; then
     # substitute any session with Wayland as a precaution
-    sed -i "s|^Session=.*|Session=plasmawayland.desktop|" $sddm_conf_file || { printf "$err_text"; exit 1; }
+    sed -i "s|^Session=.*|Session=plasmawayland.desktop|" $sddm_conf_file || { printf "$err_sddm_text"; exit 1; }
     printf "Modified Session Autorun section\n"
     
-    sed -i "s|^User=.*|User=netrunner|" $sddm_conf_file || { printf "$err_text"; exit 1; }
+    sed -i "s|^User=.*|User=netrunner|" $sddm_conf_file || { printf "$err_sddm_text"; exit 1; }
     printf "Modified User Autorun section\n"
 else
-    printf "SDDM configuration file cannot be written\nExiting...\n"
+    printf "SDDM configuration file cannot be written\n"
+    exit 1
+fi
+
+if [ -w $calamares_module_grub_config ]; then
+    # disabling 'quiet' parameter as addition - for monitoring of system boot process after install
+    sed -i 's|kernel_params = \["quiet"\]|kernel_params = \[""\]|' $calamares_module_grub_config || { printf "$err_sddm_text"; }
+    printf "Disabled 'quiet' parameter in Calamares GRUB module configuration\n"
+else
+    printf "Calamares GRUB module configuration file cannot be written\n"
+    exit 1
+fi
+
+if [ -w $calamares_module_dm_config ]; then
+    sed -i "s|DesktopEnvironment('/usr/bin/startkde', 'plasma')|DesktopEnvironment('/usr/bin/startplasmacompositor', 'plasmawayland')|" $calamares_module_dm_config || { printf "$err_calamares_text"; }
+    
+    sed -i "s|{\!s}/usr/share/xsessions/{\!s}.desktop|{\!s}/usr/share/wayland-sessions/{\!s}.desktop|" $calamares_module_dm_config || { printf "$err_calamares_text"; }
+    printf "Modified Calamares configuration modules files\n"
+else
+    printf "Calamares configuration modules files cannot be written\n"
     exit 1
 fi
 
