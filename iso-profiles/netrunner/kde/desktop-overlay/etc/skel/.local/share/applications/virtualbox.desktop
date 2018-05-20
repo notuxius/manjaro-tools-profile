@@ -1,0 +1,41 @@
+[Desktop Action Manager]
+Exec=VirtualBox
+Name=Open VM Manager
+Name[de]=VM Manager öffnen
+
+[Desktop Entry]
+Actions=Manager;
+Categories=Emulator;System;
+Comment[en_US]=Run several virtual systems on a single host computer
+Comment=Run several virtual systems on a single host computer
+Comment[de]=Mehrere virtuelle Maschinen auf einem einzigen Rechner ausführen
+Comment[it]=Esegui più macchine virtuali su un singolo computer
+Comment[ko]=가상 머신
+Comment[pl]=Uruchamianie wielu systemów wirtualnych na jednym komputerze gospodarza
+Comment[ru]=Запуск нескольких виртуальных машин на одном компьютере
+Comment[sv]=Kör flera virtuella system på en enda värddator
+DocPath=file:///usr/share/doc/virtualbox/UserManual.pdf
+Encoding=UTF-8
+Exec=QT_QPA_PLATFORM=xcb VirtualBox %U
+GenericName[en_US]=Virtual Machine
+GenericName=Virtual Machine
+GenericName[de]=Virtuelle Maschine
+GenericName[ru]=Виртуальная машина
+Icon=virtualbox
+Keywords=virtualization;
+Keywords[de]=Virtualisierung;
+Keywords[ru]=виртуализация;
+MimeType=application/x-virtualbox-vbox-extpack;application/x-virtualbox-vbox;application/x-virtualbox-ovf;application/x-virtualbox-ova;
+Name[en_US]=Oracle VM VirtualBox
+Name=Oracle VM VirtualBox
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+TryExec=VirtualBox
+Type=Application
+Version=1.0
+X-DBUS-ServiceName=
+X-DBUS-StartupType=none
+X-KDE-SubstituteUID=false
+X-KDE-Username=

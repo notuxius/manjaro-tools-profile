@@ -1,0 +1,21 @@
+[Desktop Entry]
+Categories=Qt;KDE;System;Monitor;
+Comment[en_US]=System log viewer tool
+Comment=System log viewer tool
+Exec=ksystemlog -qwindowtitle %c
+GenericName[en_US]=System Log Viewer
+GenericName=System Log Viewer
+Icon=utilities-log-viewer
+MimeType=
+Name[en_US]=KSystemLog
+Name=KSystemLog
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=none
+X-DocPath=ksystemlog/index.html
+X-KDE-SubstituteUID=false
+X-KDE-Username=
