@@ -36,7 +36,9 @@ sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || {
 sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text";}
 
 # change distribution release to year.month.day.hour format
-sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text";}
+# remove day.hour from current release when building new isos
+# TODO add check if string ins't starting with current year - for example when building with release 2018.1 - in order to not remove them
+sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text";}
 
 echo 'Done.'
 exit 0
