@@ -440,15 +440,15 @@ plasma-wayland-session
 drkonqi
 strace
 xorg-xhost
-kodi
 telegram-desktop
 ktorrent
 chromium
 kdevelop-pg-qt
-kdevelop-php
 kdevelop-python
-atom
+atom                             # testing Electron app
+pycharm-community-edition        # testing Java app
 krusader
 kompare
 latte-dock
-gnome-disk-utility
+gnome-disk-utility               # testing CSD GTK3 app 
+kshutdown
