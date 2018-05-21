@@ -39,3 +39,4 @@ sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { p
 sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text";}
 
 echo 'Done.'
+exit 0
