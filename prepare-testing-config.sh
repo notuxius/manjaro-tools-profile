@@ -7,7 +7,7 @@
 if [ -f $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]; then
     echo "System manjaro tools configuration found"
     source_conf_file=/etc/manjaro-tools/manjaro-tools.conf
-    target_conf_file=~/.config/manjaro-tools/manjaro-tools.conf
+    target_conf_file=$(eval echo "~$SUDO_USER")/.config/manjaro-tools/manjaro-tools.conf
 else
     echo "System manjaro tools configuration not found"
     echo "Exiting..."
