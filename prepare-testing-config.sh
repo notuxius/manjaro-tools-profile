@@ -7,7 +7,9 @@
 if [ -f $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]; then
     echo "System manjaro tools configuration found"
     source_conf_file=/etc/manjaro-tools/manjaro-tools.conf
-    target_conf_file=$(eval echo "~$SUDO_USER")/.config/manjaro-tools/manjaro-tools.conf
+    target_conf_file=$(eval echo "~$SUDO_USER"/.config/manjaro-tools/manjaro-tools.conf)
+    lsb_release_file=$(eval echo /etc/lsb-release)
+    os_release_file=$(eval echo /usr/lib/os-release)
 else
     echo "System manjaro tools configuration not found"
     echo "Exiting..."
@@ -20,12 +22,12 @@ fi
 if [ -f $(eval echo $target_conf_file) ]; then
     echo "You have existing manjaro tools configuration file in your home directory"
     cp -i $source_conf_file $target_conf_file
+    echo "Making changes in manjaro tools configuration file in your home directory"
 else
     echo "Copying system manjaro tools configuration file in your home directory"
     cp $source_conf_file $target_conf_file
+    echo "Making changes in manjaro tools configuration file in your home directory"
 fi
-
-echo "Making changes in manjaro tools configuration file in your home directory"
 
 err_prepare_text="Could not make modifications in user's home manjaro tools configuration file\n"
 
@@ -35,10 +37,34 @@ sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || {
 # change iso label from Manjaro into Netrunner
 sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text";}
 
-# change distribution release to year.month.day.hour format
-# remove day.hour from current release when building new isos
-# TODO add check if string ins't starting with current year - for example when building with release 2018.1 - in order to not remove them
-sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text";}
+# change distribution release to BUILD_ID(with month without possible leading zero).day.hour format
+
+
+if [ -f $lsb_release_file ]; then
+    source /etc/lsb-release
+    if [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}$ ]]; then
+        echo 111
+        echo $DISTRIB_RELEASE
+        sed -i 's|.*dist_release=.*|dist_release=\$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+    elif [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}.[0-9]{2}.[0-9]{2}$ ]]; then
+        echo 222
+        echo $DISTRIB_RELEASE
+        sed -i 's|.*dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+    else
+        echo 333
+        if [ -f $os_release_file ]; then
+            source /usr/lib/os-release
+            echo $BUILD_ID
+            sed -i 's|.*dist_release=.*|dist_release=$(source /usr/lib/os-release; DISTRIB_RELEASE=$(echo $BUILD_ID \| sed "s\|\\.0\|\\.\|"); echo "${DISTRIB_RELEASE}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+        fi
+    fi
+fi
+
+#distrib_release_format=
+
+#sed -i "s|.*dist_release=.*|dist_release=${distrib_release_format}.\$(date +%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
+
+
 
 echo 'Done.'
 exit 0
