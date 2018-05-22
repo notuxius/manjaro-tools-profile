@@ -15,6 +15,8 @@ https://wiki.manjaro.org/index.php?title=Build_Manjaro_ISOs_with_buildiso
 
 'prepare-testing-config' script can be used for initial autoconfiguring of testing setup
 
+Profile isos can be built with 'buildiso -p kdewaylandtest' command
+
 Link to created ISOs with current master branch profile files and some older versions: 
 
 https://drive.google.com/drive/folders/1ptFf2tZYNC3i04aAL1l84TyABeI60QCZ
