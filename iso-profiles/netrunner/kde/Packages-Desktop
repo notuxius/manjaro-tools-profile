@@ -452,3 +452,7 @@ kompare
 latte-dock
 gnome-disk-utility               # testing CSD GTK3 app 
 kshutdown
+manjaro-tools-base
+manjaro-tools-iso
+manjaro-tools-pkg
+manjaro-tools-yaml
