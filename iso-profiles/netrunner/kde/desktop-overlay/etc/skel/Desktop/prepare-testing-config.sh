@@ -38,20 +38,15 @@ sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || {
 sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text";}
 
 # change distribution release to BUILD_ID(with month without possible leading zero).day.hour format
-
-
 if [ -f $lsb_release_file ]; then
     source /etc/lsb-release
     if [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}$ ]]; then
-        echo 111
         echo $DISTRIB_RELEASE
         sed -i 's|.*dist_release=.*|dist_release=\$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
     elif [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}.[0-9]{2}.[0-9]{2}$ ]]; then
-        echo 222
         echo $DISTRIB_RELEASE
         sed -i 's|.*dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
     else
-        echo 333
         if [ -f $os_release_file ]; then
             source /usr/lib/os-release
             echo $BUILD_ID
@@ -59,12 +54,6 @@ if [ -f $lsb_release_file ]; then
         fi
     fi
 fi
-
-#distrib_release_format=
-
-#sed -i "s|.*dist_release=.*|dist_release=${distrib_release_format}.\$(date +%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
-
-
 
 echo 'Done.'
 exit 0
