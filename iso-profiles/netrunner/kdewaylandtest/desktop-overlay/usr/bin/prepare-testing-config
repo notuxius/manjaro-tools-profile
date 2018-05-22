@@ -3,11 +3,14 @@
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
 
+# create if not exists manjaro tools folder in user's home directory
+mkdir -p $(eval echo "${HOME}"/.config/manjaro-tools/)
+
 # check if manjaro tools config file exists
 if [ -f $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]; then
     echo "System manjaro tools configuration found"
-    source_conf_file=/etc/manjaro-tools/manjaro-tools.conf
-    target_conf_file=$(eval echo "~$SUDO_USER"/.config/manjaro-tools/manjaro-tools.conf)
+    source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
+    target_conf_file=$(eval echo ${HOME}/.config/manjaro-tools/manjaro-tools.conf)
     lsb_release_file=$(eval echo /etc/lsb-release)
     os_release_file=$(eval echo /usr/lib/os-release)
 else
@@ -41,19 +44,30 @@ sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { p
 if [ -f $lsb_release_file ]; then
     source /etc/lsb-release
     if [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}$ ]]; then
-        echo $DISTRIB_RELEASE
         sed -i 's|.*dist_release=.*|dist_release=\$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
     elif [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}.[0-9]{2}.[0-9]{2}$ ]]; then
-        echo $DISTRIB_RELEASE
         sed -i 's|.*dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
     else
         if [ -f $os_release_file ]; then
             source /usr/lib/os-release
-            echo $BUILD_ID
             sed -i 's|.*dist_release=.*|dist_release=$(source /usr/lib/os-release; DISTRIB_RELEASE=$(echo $BUILD_ID \| sed "s\|\\.0\|\\.\|"); echo "${DISTRIB_RELEASE}").\$(date +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
         fi
     fi
 fi
+
+# check if internet is availabe and clone latest github profile into user's home directory
+case "$(curl -s --max-time 5 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+  [23]) cd ${HOME}
+        # sudo pacman-mirrors -f 5
+        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|unstable/\$repo/\$arch||")
+        sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file
+        git clone https://github.com/notuxius/manjaro-tools-profile.git
+        echo "Wayland/Xorg isos can be built with 'buildiso -p kdewaylandtest' command"
+        ;;
+  *) echo "Unable to download Netrunner Rolling Wayland/Xorg iso testing profile"
+     echo "Please visit https://github.com/notuxius/manjaro-tools-profile for downloading"
+     ;;
+esac
 
 echo 'Done.'
 exit 0
