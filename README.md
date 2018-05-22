@@ -13,7 +13,7 @@ https://wiki.manjaro.org/index.php?title=Manjaro-tools
 
 https://wiki.manjaro.org/index.php?title=Build_Manjaro_ISOs_with_buildiso
 
-'prepare\_testing\_config.sh' file can be used for additional auto preparations of configuration
+'prepare-testing-config' script can be used for initial autoconfiguring for testing setup
 
 Link to created ISOs with current master branch profile files and some older versions: 
 
