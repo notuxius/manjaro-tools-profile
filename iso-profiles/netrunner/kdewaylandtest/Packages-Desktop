@@ -386,7 +386,7 @@ default-settings-xsession
 default-systemsettings-settings-rolling
 # netrunner-settings-autostart
 # netrunner-settings-desktop-rolling
-netrunner-settings-firefox
+# netrunner-settings-firefox
 netrunner-settings-kcmabout
 netrunner-settings-samba
 netrunner-settings-sddm
