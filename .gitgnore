@@ -1,6 +1,11 @@
- *~
-*.tar.gz
-*.tar.xz
+*~
 .kateproject.d
 *.sig
-
+.kdev4
+*.orig
+*.rej
+*.kdevelop
+*.kdevelop.filelist
+*.kdevelop.pcs
+*.kdevses
+.*kate-swp
