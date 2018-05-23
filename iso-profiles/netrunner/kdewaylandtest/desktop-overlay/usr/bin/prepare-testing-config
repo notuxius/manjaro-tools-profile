@@ -56,12 +56,12 @@ if [ -f $lsb_release_file ]; then
 fi
 
 # check if internet is availabe - select best mirror and clone latest github profile into user's home directory
-case "$(curl -s --max-time 5 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
   [23]) cd ${HOME}
-        # sudo pacman-mirrors -f 5
+        echo "'sudo pacman-mirrors -m=rank' command could be used for getting updated mirrors list"
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/unstable/\$repo/\$arch||")
         sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || { printf "$err_prepare_text"; }
-        echo "Substituted default build mirror"
+        echo "Changed build mirror in manjaro tools configuration file to ${best_server_match}"
         git clone https://github.com/notuxius/manjaro-tools-profile.git
         echo "Downloaded profile is located in user's home directory"
         echo "Profile ISOs can be built with 'buildiso -p kdewaylandtest' command"
@@ -72,10 +72,11 @@ case "$(curl -s --max-time 5 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*
 esac
 
 # select latest non-realtime kernel available
-latest_nonrt_kernel="$(mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | sort -nr | head -n1)"
-
-sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
-echo "Changing kernel in manjaro tools configuration file in your home directory to latest non-realtime available"
+if [[ -x $(which mhwd-kernel) ]]; then
+    latest_nonrt_kernel="$(mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | sort -nr | head -n1)"
+    sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
+    echo "Changed kernel in manjaro tools configuration file to linux${latest_nonrt_kernel} - latest non-realtime available"
+fi
 
 echo 'Done.'
 exit 0
