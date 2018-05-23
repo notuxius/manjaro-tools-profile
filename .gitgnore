@@ -1,9 +1,10 @@
 *~
-.kateproject.d
 *.sig
-.kdev4
 *.orig
 *.rej
+*.tar.gz.old
+.kdev4
+.kateproject.d
 *.kdevelop
 *.kdevelop.filelist
 *.kdevelop.pcs
