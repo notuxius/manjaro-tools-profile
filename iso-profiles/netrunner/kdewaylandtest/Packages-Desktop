@@ -379,7 +379,7 @@ default-settings-autostart
 default-settings-kdeapps
 default-settings-plasma
 default-settings-profiled
-default-settings-session-debug
+# default-settings-session-debug
 default-settings-thunderbird
 default-settings-xdg-user-dirs
 default-settings-xsession
@@ -445,13 +445,16 @@ ktorrent
 chromium
 kdevelop-pg-qt
 kdevelop-python
-atom                             # testing Electron app
-pycharm-community-edition        # testing Java app
+atom
+pycharm-community-edition
 krusader
 kompare
 latte-dock
-gnome-disk-utility               # testing CSD GTK3 app 
+elisa
+calligra
+gnome-disk-utility
 kshutdown
+blender
 manjaro-tools-base
 manjaro-tools-iso
 manjaro-tools-pkg
