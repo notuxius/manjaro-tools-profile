@@ -29,7 +29,6 @@ if [ -f $(eval echo $target_conf_file) ]; then
 else
     echo "Copying system manjaro tools configuration file in your home directory"
     cp $source_conf_file $target_conf_file
-    echo "Copying system manjaro tools configuration file into your home directory"
 fi
 
 err_prepare_text="Could not make modifications in user's home manjaro tools configuration file\n"
@@ -65,21 +64,22 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         git clone https://github.com/notuxius/manjaro-tools-profile.git
         echo "Downloaded profile is located in user's home directory"
         echo "Profile ISOs can be built with 'buildiso -p kdewaylandtest' command"
+        
+        # select latest non-realtime kernel available
+        if [[ -x $(which mhwd-kernel) ]]; then
+            latest_nonrt_kernel="$(mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | sort -nr | head -n1)"
+            sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
+            echo "Changed kernel in manjaro tools configuration file to linux${latest_nonrt_kernel} - latest non-realtime available"
+        else
+            echo "Manjaro Kernel utility wasn't found"
+        fi
         ;;
-  *) echo "Unable to select best mirror and download profile"
-     echo "Please visit https://github.com/notuxius/manjaro-tools-profile for downloading"
+  *) echo "Unable to select best build mirror and latest kernel - they could be changed manually in manjaro tools configuration file"
+     echo "Unable to download profile - it could be obtained on https://github.com/notuxius/manjaro-tools-profile page"
      ;;
 esac
 
-# select latest non-realtime kernel available
-if [[ -x $(which mhwd-kernel) ]]; then
-    latest_nonrt_kernel="$(mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | sort -nr | head -n1)"
-    sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
-    echo "Changed kernel in manjaro tools configuration file to linux${latest_nonrt_kernel} - latest non-realtime available"
-else
-    echo "Manjaro Kernel utility wasn't found"
-    echo "Build kernel could be changed manually in manjaro tools configuration file"
-fi
+
 
 echo 'Done.'
 exit 0
