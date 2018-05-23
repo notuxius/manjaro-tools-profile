@@ -76,6 +76,9 @@ if [[ -x $(which mhwd-kernel) ]]; then
     latest_nonrt_kernel="$(mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | sort -nr | head -n1)"
     sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
     echo "Changed kernel in manjaro tools configuration file to linux${latest_nonrt_kernel} - latest non-realtime available"
+else
+    echo "Manjaro Kernel utility wasn't found"
+    echo "Build kernel could be changed manually in manjaro tools configuration file"
 fi
 
 echo 'Done.'
