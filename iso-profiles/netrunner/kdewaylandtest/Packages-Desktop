@@ -5,7 +5,7 @@ networkmanager-openconnect
 networkmanager-openvpn
 networkmanager-pptp
 networkmanager-vpnc
-networkmanager-dispatcher-ntpd
+# networkmanager-dispatcher-ntpd
 nss-mdns  # NSS support for mDNS (optdepend for avahi)
 ntp
 mobile-broadband-provider-info
@@ -83,7 +83,7 @@ yay
 ## Fonts
 # cantarell-fonts        # Installed as gnome-themes-standard dependency
 noto-fonts               # default font
-# noto-fonts-cjk         # big package, ~76 mb compressed
+noto-fonts-cjk         # big package, ~76 mb compressed
 >extra noto-fonts-emoji
 terminus-font
 >extra ttf-bitstream-vera
@@ -96,16 +96,16 @@ terminus-font
 
 ## Games
 # >extra steam-manjaro
-burgerspace
-gltron
-gnome-chess
-gnuchess
-frozen-bubble
-kbreakout
-kmines
-gnome-sudoku
-ksnakeduel
-kmahjongg
+# burgerspace
+# gltron
+# gnome-chess
+# gnuchess
+# frozen-bubble
+# kbreakout
+# kmines
+# gnome-sudoku
+# ksnakeduel
+# kmahjongg
 steam
 steam-native-runtime
 
@@ -113,7 +113,7 @@ steam-native-runtime
 discover
 packagekit-qt5
 octopi
-# octopi-notifier-frameworks
+octopi-notifier-frameworks
 octopi-cachecleaner
 octopi-repoeditor
 
@@ -153,7 +153,6 @@ ksystraycmd
 kwallet-pam
 kwayland-integration
 kwin
-# qt5-virtualkeyboard  # Virtual keyboard support for kwin-wayland
 kwrited
 milou
 plasma-desktop
@@ -208,7 +207,7 @@ khelpcenter
 kio-extras
 >extra kleopatra
 konsole
-# konversation
+konversation
 ksystemlog
 kwalletmanager
 # kwrite
@@ -257,7 +256,6 @@ sshfs  # remote filesystem browser
 >extra dvdauthor        # for creation of DVD
 >extra dvgrab           # for firewire capture
 >extra recordmydesktop  # for screen capture
-#>extra vlc # for DVD preview, needs xine-ui or vlc, vlc is in "Applications" section
 >extra movit            # for GPU video processing
 
 ## Optional dependencies for okular
@@ -289,7 +287,8 @@ systemd-kcm
 >extra thunderbird
 >extra vlc
 yakuake
-audacious
+audacious-gtk3
+audacious-plugins-gtk3
 gimp
 gmusicbrowser-filterfun
 google-talkplugin
@@ -336,6 +335,7 @@ xdg-user-dirs
 xorg-server
 xorg-twm
 xorg-xinit
+>extra xf86-input-wacom
 mesa-demos
 >multilib lib32-mesa-demos
 
@@ -352,7 +352,7 @@ manjaro-hotfixes
 >extra xdg-desktop-portal-kde
 
 ## Artwork packages
-artwork-audacious
+# artwork-audacious
 artwork-color-scheme-carbon
 artwork-lnf-theme-netrunner-rolling
 artwork-netrunner-icons
@@ -361,7 +361,7 @@ artwork-numarceeze-icons
 artwork-wallpapers-netrunner-rolling-201801
 artwork-wallpapers-netrunner-rolling-base
 artwork-whiteclassicia-cursor
-artwork-windows-cursor
+# artwork-windows-cursor
 adapta-kde
 carbon-gtk2
 carbon-gtk3
@@ -386,7 +386,7 @@ default-settings-xsession
 default-systemsettings-settings-rolling
 # netrunner-settings-autostart
 # netrunner-settings-desktop-rolling
-# netrunner-settings-firefox
+netrunner-settings-firefox
 netrunner-settings-kcmabout
 netrunner-settings-samba
 netrunner-settings-sddm
@@ -416,45 +416,71 @@ icedtea-web
 skypeforlinux-stable-bin
 
 ## KDE PIM
-# akonadiconsole
-# kaddressbook
-# kalarm
-# kmail
-# knotes
-# konsolekalendar
-# kontact
-# korganizer
+akonadiconsole
+kaddressbook
+kalarm
+kmail
+knotes
+kontact
+korganizer
 
 ## KDE Telepathy
-# telepathy-kde-meta
-# telepathy-gabble
-# telepathy-farstream
-# telepathy-haze
-# telepathy-idle
-# telepathy-morse
-# telepathy-rakia
+telepathy-kde-meta
+telepathy-gabble
+telepathy-farstream
+telepathy-haze
+telepathy-idle
+telepathy-morse
 
-## Wayland testing packages
+## Additional packages for testing
 artwork-sddm-breeze-new
 plasma-wayland-session
+qt5-virtualkeyboard
 drkonqi
 strace
+valgrind
 xorg-xhost
+ufw
+krfb
+krdc
+akregator
+kube
+trojita
 telegram-desktop
+ring-kde
 ktorrent
 chromium
+kstars
+skrooge
+kpatience
+ksudoku
+ksquares
+kreversi
+kshisen
+kmahjongg
 kdevelop-pg-qt
 kdevelop-python
 atom
 pycharm-community-edition
 krusader
 kompare
+umbrello
+cervisia
 latte-dock
+kwave
+audacity
 elisa
 calligra
+kolourpaint
 gnome-disk-utility
 kshutdown
+krename
 blender
+zanshin
+wine_gecko
+wine-mono
+playonlinux
+dosbox
 manjaro-tools-base
 manjaro-tools-iso
 manjaro-tools-pkg
