@@ -96,16 +96,9 @@ terminus-font
 
 ## Games
 # >extra steam-manjaro
-# burgerspace
-# gltron
-# gnome-chess
-# gnuchess
-# frozen-bubble
-# kbreakout
-# kmines
-# gnome-sudoku
-# ksnakeduel
-# kmahjongg
+knights
+ksudoku
+playonlinux
 steam
 steam-native-runtime
 
@@ -204,7 +197,6 @@ kdenetwork-filesharing
 kde-servicemenus-rootactions
 khelpcenter
 kio-extras
->extra kleopatra
 konsole
 konversation
 ksystemlog
@@ -415,13 +407,7 @@ icedtea-web
 skypeforlinux-stable-bin
 
 ## KDE PIM
-akonadiconsole
-kaddressbook
-kalarm
-kmail
-knotes
-kontact
-korganizer
+kdepim-meta
 
 ## KDE Telepathy
 telepathy-kde-meta
@@ -436,7 +422,6 @@ artwork-sddm-breeze-new
 plasma-wayland-session
 qt5-virtualkeyboard
 liquidshell
-plasma5-applets-tortoggle
 drkonqi
 strace
 valgrind
@@ -444,47 +429,35 @@ xorg-xhost
 ufw
 krfb
 krdc
-akregator
 kube
 trojita
 telegram-desktop
 ring-kde
 ktorrent
-kget
 chromium
 kcron
 kstars
-skrooge
-kpatience
-ksudoku
-ksquares
-kreversi
-kigo
-kshisen
-kmahjongg
 kdevelop-pg-qt
 kdevelop-python
 atom
 pycharm-community-edition
-krusader
+qtcreator
 kompare
-umbrello
-cervisia
 latte-dock
+krusader
 kwave
 audacity
 elisa
 calligra
-kolourpaint
 gnome-disk-utility
 kshutdown
 krename
+kolourpaint
 blender
 zanshin
+dosbox
 wine_gecko
 wine-mono
-playonlinux
-dosbox
 manjaro-tools-base
 manjaro-tools-iso
 manjaro-tools-pkg
