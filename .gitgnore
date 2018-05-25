@@ -2,11 +2,11 @@
 *.sig
 *.orig
 *.rej
-*.tar.gz.old
-.kdev4
-.kateproject.d
+*.old
+*.kdev4
+*.kateproject.d
 *.kdevelop
 *.kdevelop.filelist
 *.kdevelop.pcs
 *.kdevses
-.*kate-swp
+*.kate-swp
