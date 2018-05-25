@@ -199,7 +199,6 @@ kcalc
 kfind
 kdeconnect
 okular
-# >extra kdenetwork-kget
 kdenetwork-filesharing
 >extra kdenlive
 kde-servicemenus-rootactions
@@ -436,6 +435,8 @@ telepathy-morse
 artwork-sddm-breeze-new
 plasma-wayland-session
 qt5-virtualkeyboard
+liquidshell
+plasma5-applets-tortoggle
 drkonqi
 strace
 valgrind
@@ -449,13 +450,16 @@ trojita
 telegram-desktop
 ring-kde
 ktorrent
+kget
 chromium
+kcron
 kstars
 skrooge
 kpatience
 ksudoku
 ksquares
 kreversi
+kigo
 kshisen
 kmahjongg
 kdevelop-pg-qt
