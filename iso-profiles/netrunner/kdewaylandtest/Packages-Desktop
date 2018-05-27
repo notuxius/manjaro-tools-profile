@@ -243,10 +243,10 @@ kaccounts-providers
 sshfs  # remote filesystem browser
 
 ## Optional dependencies for kdenlive
->extra cdrtools         # for creation of DVD ISO images
->extra dvdauthor        # for creation of DVD
->extra dvgrab           # for firewire capture
->extra recordmydesktop  # for screen capture
+# >extra cdrtools         # for creation of DVD ISO images
+# >extra dvdauthor        # for creation of DVD
+# >extra dvgrab           # for firewire capture
+# >extra recordmydesktop  # for screen capture
 >extra movit            # for GPU video processing
 
 ## Optional dependencies for okular
@@ -258,7 +258,7 @@ poppler-data  # encoding data to display PDF documents containing CJK characters
 
 ## Applications
 # >extra cantata
-dmidecode # for inxi -m output
+dmidecode  # for inxi -m output
 htop
 imagewriter
 >extra inkscape
@@ -365,23 +365,23 @@ desktop-theme-bluex
 wallpapers-extra-pack-4
 
 ## Settings packages
-default-settings-applications
-default-settings-autostart
-default-settings-kdeapps
-default-settings-plasma
-default-settings-profiled
+# default-settings-applications
+# default-settings-autostart
+# default-settings-kdeapps
+# default-settings-plasma
+# default-settings-profiled
 # default-settings-session-debug
-default-settings-thunderbird
-default-settings-xdg-user-dirs
-default-settings-xsession
-default-systemsettings-settings-rolling
+# default-settings-thunderbird
+# default-settings-xdg-user-dirs
+# default-settings-xsession
+# default-systemsettings-settings-rolling
 # netrunner-settings-autostart
 # netrunner-settings-desktop-rolling
-netrunner-settings-firefox
-netrunner-settings-kcmabout
-netrunner-settings-samba
-netrunner-settings-sddm
-netrunner-settings-theming
+# netrunner-settings-firefox
+# netrunner-settings-kcmabout
+# netrunner-settings-samba
+# netrunner-settings-sddm
+# netrunner-settings-theming
 
 ## Extra and support packages
 qtcurve-gtk2
@@ -410,12 +410,12 @@ skypeforlinux-stable-bin
 kdepim-meta
 
 ## KDE Telepathy
-telepathy-kde-meta
-telepathy-gabble
-telepathy-farstream
-telepathy-haze
-telepathy-idle
-telepathy-morse
+# telepathy-kde-meta
+# telepathy-gabble
+# telepathy-farstream
+# telepathy-haze
+# telepathy-idle
+# telepathy-morse
 
 ## Additional packages for testing
 artwork-sddm-breeze-new
@@ -426,6 +426,7 @@ drkonqi
 strace
 valgrind
 xorg-xhost
+pacmanlogviewer
 ufw
 krfb
 krdc
