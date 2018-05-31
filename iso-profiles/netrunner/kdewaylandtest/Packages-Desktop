@@ -274,7 +274,7 @@ manjaro-settings-manager-knotifier
 powertop
 >extra qbittorrent
 screenfetch
-systemd-kcm
+# systemd-kcm
 >extra thunderbird
 >extra vlc
 yakuake
