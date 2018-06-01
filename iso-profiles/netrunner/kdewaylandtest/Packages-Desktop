@@ -274,7 +274,7 @@ manjaro-settings-manager-knotifier
 powertop
 >extra qbittorrent
 screenfetch
-# systemd-kcm
+systemd-kcm
 >extra thunderbird
 >extra vlc
 yakuake
@@ -422,6 +422,7 @@ artwork-sddm-breeze-new
 plasma-wayland-session
 qt5-virtualkeyboard
 liquidshell
+plasma5-applets-redshift-control
 drkonqi
 strace
 valgrind
