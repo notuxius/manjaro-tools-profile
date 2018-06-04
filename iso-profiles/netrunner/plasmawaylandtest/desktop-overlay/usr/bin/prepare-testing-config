@@ -22,7 +22,7 @@ fi
 # check if user's home config file already exists - and displays info and confirmation for overwriting it -
 # then copy system-wide manjaro tools config file into user's home directory for further modifications - 
 # user's home config file take precedence over the /etc system's one
-if [ -f $(eval echo $target_conf_file) ]; then
+if [[ -r $target_conf_file ]]; then
     echo "You have existing manjaro tools configuration file in your home directory"
     cp -i $source_conf_file $target_conf_file
     echo "Replacing existing manjaro tools configuration file in your home directory"
@@ -37,7 +37,7 @@ err_prepare_text="Could not make modifications in user's home manjaro tools conf
 sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || { printf "$err_prepare_text"; }
 
 # change iso label from Manjaro into Netrunner
-sed -i 's|# dist_branding="MJRO"|dist_branding="NRRW"|' $target_conf_file || { printf "$err_prepare_text"; }
+sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text"; }
 
 # change distribution release to ...codename-month.day.hour... version format
 if [[ -r $lsb_release_file ]]; then
@@ -83,8 +83,6 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
      echo "Unable to download profile - it could be obtained on https://github.com/notuxius/manjaro-tools-profile page"
      ;;
 esac
-
-
 
 echo 'Done.'
 exit 0
