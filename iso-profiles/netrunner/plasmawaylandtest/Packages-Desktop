@@ -14,7 +14,7 @@ openresolv
 openssh
 samba
 usb_modeswitch
-net-tools
+# net-tools
 
 ## Libraries for Sound/Audio/Video
 alsa-firmware
@@ -214,6 +214,8 @@ marble
 ## Optional dependencies for ark
 p7zip  # 7Z format support
 unrar  # RAR format support
+# unarchiver  # RAR format support
+zip    # ZIP packaging in Krusader
 
 ## Optional dependency for digikam
 >extra kipi-plugins     # export to various online services
@@ -260,8 +262,8 @@ poppler-data  # encoding data to display PDF documents containing CJK characters
 # >extra cantata
 dmidecode  # for inxi -m output
 htop
-imagewriter
->extra inkscape
+# imagewriter
+# inkscape
 inxi
 >extra krita
 >extra firefox
@@ -281,7 +283,7 @@ yakuake
 audacious-gtk3
 audacious-plugins-gtk3
 gimp
-gmusicbrowser-filterfun
+# gmusicbrowser-filterfun
 google-talkplugin
 grub-customizer
 handbrake
@@ -341,6 +343,9 @@ manjaro-hotfixes
 >extra flatpak
 >extra xdg-desktop-portal
 >extra xdg-desktop-portal-kde
+
+## Appimage support
+appimagelauncher
 
 ## Artwork packages
 # artwork-audacious
@@ -426,6 +431,7 @@ plasma5-applets-redshift-control
 drkonqi
 strace
 valgrind
+pkgfile
 xorg-xhost
 pacmanlogviewer
 ufw
@@ -447,6 +453,7 @@ qtcreator
 kompare
 latte-dock
 krusader
+etcher
 kwave
 audacity
 elisa

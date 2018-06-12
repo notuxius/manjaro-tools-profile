@@ -1,5 +1,4 @@
 acpi
->i686 archlinux32-keyring
 b43-fwcutter
 bash
 btrfs-progs
@@ -22,7 +21,6 @@ filesystem
 findutils
 gawk
 gcc-libs
->multilib gcc-libs-multilib
 gettext
 glibc
 grep
@@ -72,7 +70,7 @@ cpupower
 cronie
 cryptsetup
 device-mapper
-dhcpcd
+# dhcpcd
 haveged
 lvm2
 mdadm
