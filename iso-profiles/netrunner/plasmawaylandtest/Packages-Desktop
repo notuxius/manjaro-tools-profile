@@ -215,7 +215,7 @@ marble
 p7zip  # 7Z format support
 unrar  # RAR format support
 # unarchiver  # RAR format support
-zip    # ZIP packaging in Krusader
+zip    # ZIP packaging support in Krusader
 
 ## Optional dependency for digikam
 >extra kipi-plugins     # export to various online services
@@ -263,7 +263,7 @@ poppler-data  # encoding data to display PDF documents containing CJK characters
 dmidecode  # for inxi -m output
 htop
 # imagewriter
-# inkscape
+# >extra inkscape
 inxi
 >extra krita
 >extra firefox
@@ -382,7 +382,7 @@ wallpapers-extra-pack-4
 # default-systemsettings-settings-rolling
 # netrunner-settings-autostart
 # netrunner-settings-desktop-rolling
-# netrunner-settings-firefox
+netrunner-settings-firefox
 # netrunner-settings-kcmabout
 # netrunner-settings-samba
 # netrunner-settings-sddm
@@ -445,6 +445,7 @@ ktorrent
 chromium
 kcron
 kstars
+retext
 kdevelop-pg-qt
 kdevelop-python
 atom
@@ -453,7 +454,6 @@ qtcreator
 kompare
 latte-dock
 krusader
-etcher
 kwave
 audacity
 elisa

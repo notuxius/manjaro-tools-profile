@@ -1,11 +1,13 @@
 # manjaro-tools-profile
-Manjaro-tools profile used to create Netrunner Rolling Wayland/Xorg ISO images.
+Manjaro-tools profile used to create Netrunner Rolling Wayland/Xorg ISO images
 
-Unstable repositories - experimental kernel - for testing purposes only.
+Unstable repositories - experimental kernel - for testing purposes only
 
 Default username: netrunner
 
 Default password: netrunner
+
+Escalated privileges don't require entering of password in live mode
 
 Links to wiki with instructions how to build and modify the profile:
 

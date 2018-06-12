@@ -61,8 +61,8 @@ psmisc
 reiserfsprogs
 sed
 shadow
+spectre-meltdown-checker
 s-nail
->sonar sonar-release
 sudo
 sysfsutils
 acpid
