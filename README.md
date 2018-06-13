@@ -17,6 +17,8 @@ https://wiki.manjaro.org/index.php?title=Build_Manjaro_ISOs_with_buildiso
 
 'prepare-testing-config' script can be used for initial autoconfiguring of testing setup
 
+The script can be launched with -m/-c or -f/-u argument for desktop packages toggling
+
 Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command
 
 Link to created ISOs with current master branch profile files and some older versions:

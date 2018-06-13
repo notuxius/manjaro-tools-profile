@@ -3,14 +3,16 @@
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
 
+cd ${HOME}
+
 # create if not exists manjaro tools folder in user's home directory
-mkdir -p $(eval echo "${HOME}"/.config/manjaro-tools/)
+mkdir -p $(eval echo .config/manjaro-tools/)
 
 # check if manjaro tools config file exists
 if [[ -r $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]]; then
     echo "System manjaro tools configuration found"
     source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
-    target_conf_file=$(eval echo ${HOME}/.config/manjaro-tools/manjaro-tools.conf)
+    target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
     lsb_release_file=$(eval echo /etc/lsb-release)
     # os_release_file=$(eval echo /usr/lib/os-release)
 else
@@ -22,10 +24,9 @@ fi
 # check if user's home config file already exists - and displays info and confirmation for overwriting it -
 # then copy system-wide manjaro tools config file into user's home directory for further modifications - 
 # user's home config file take precedence over the /etc system's one
-if [[ -r $target_conf_file ]]; then
+if [[ -w $target_conf_file ]]; then
     echo "You have existing manjaro tools configuration file in your home directory"
     cp -i $source_conf_file $target_conf_file
-    echo "Replacing existing manjaro tools configuration file in your home directory"
 else
     echo "Copying system manjaro tools configuration file in your home directory"
     cp $source_conf_file $target_conf_file
@@ -40,7 +41,7 @@ sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || {
 sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text"; }
 
 # change distribution release to ...codename-month.day.hour... version format
-if [[ -r $lsb_release_file ]]; then
+if [[ -w $lsb_release_file ]]; then
 sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
 fi
 
@@ -61,13 +62,12 @@ fi
 
 # check if internet is availabe - select best mirror and clone latest github profile into user's home directory
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23]) cd ${HOME}
-        echo "'sudo pacman-mirrors -m=rank' command could be used for getting updated mirrors list"
-        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/unstable/\$repo/\$arch||")
+  [23]) echo "'sudo pacman-mirrors -f 5' command could be used for getting updated mirrors list"
+        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/*.stable/\$repo/\$arch||")
         sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || { printf "$err_prepare_text"; }
         echo "Changed build mirror in manjaro tools configuration file to ${best_server_match}"
         git clone https://github.com/notuxius/manjaro-tools-profile.git
-        echo "Downloaded profile is located in user's home directory"
+        echo "Build profile is located in user's home directory"
         echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
         
         # select latest non-realtime kernel available
@@ -83,6 +83,41 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
      echo "Unable to download profile - it could be obtained on https://github.com/notuxius/manjaro-tools-profile page"
      ;;
 esac
+
+# toggling of minimal desktop packages
+desktop_packages_file=$(eval echo manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
+
+if [[ ${#1} -gt 0 ]]; then
+    if [[ -w $desktop_packages_file ]]; then
+        opts='mcfu'
+
+        err_arg_text="Use -m/-c or -f/-u argument for desktop packages toggling"
+
+        if [[ ${#1} -gt 2 ]]; then
+            echo $err_arg_text
+            exit 1
+        else
+            while getopts "${opts}" arg; do
+                case "${arg}" in
+                    # comment additional desktop packages
+                    # change distribution release to ...codename-minimal-month.day.hour... version format
+                    m|c) sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || { printf "$err_prepare_text"; }; sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }; echo "Minimal build - some additional desktop packages will not be included" ;;
+                    
+                    # uncomment additional desktop packages
+                    # change distribution release to ...codename-month.day.hour... version format
+                    f|u) sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || { printf "$err_prepare_text"; }; sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }; echo "Full build - some additional desktop packages will be included" ;;
+                    *) echo $err_arg_text; exit 1 ;;
+                esac
+            done
+        fi
+        
+        # echo "Contents of Desktop-Packages file after toggling comments:"
+        # cat $desktop_packages_file
+        
+    else
+        echo "Desktop packages files cannot be written - no changes been made"
+    fi
+fi
 
 echo 'Done.'
 exit 0
