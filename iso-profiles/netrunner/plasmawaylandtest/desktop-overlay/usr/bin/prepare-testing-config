@@ -126,7 +126,7 @@ if [[ ${#1} -gt 0 ]]; then
         # cat $desktop_packages_file
         
     else
-        echo "Desktop packages files cannot be written - no changes has been made"
+        echo "Desktop packages files cannot be changed"
     fi
 fi
 
