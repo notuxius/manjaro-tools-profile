@@ -66,7 +66,7 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
         sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || { printf "$err_prepare_text"; }
         echo "Changed build mirror in manjaro tools configuration file to ${best_server_match}"
-        git clone https://github.com/notuxius/manjaro-tools-profile.git
+        git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git
         echo "Build profile is located in user's home directory"
         echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
         
@@ -83,12 +83,12 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         ;;
         
   *) echo "Unable to select best build mirror and latest kernel - they could be changed manually in manjaro tools configuration file"
-     echo "Unable to download profile - it could be obtained on https://github.com/notuxius/manjaro-tools-profile page"
+     echo "Unable to download profile - it could be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile page"
      ;;
 esac
 
 # toggling of minimal desktop packages
-desktop_packages_file=$(eval echo manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
+desktop_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
 
 if [[ ${#1} -gt 0 ]]; then
     if [[ -w $desktop_packages_file ]]; then

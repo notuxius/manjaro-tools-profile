@@ -1,6 +1,6 @@
 # Plasma Wayland Testing Manjaro Tools Profile
 
-Manjaro-tools profile used to create Netrunner Rolling Wayland/Xorg ISO images
+Manjaro tools profile used to create Netrunner Rolling Wayland/Xorg testing ISO images
 
 Unstable repositories - experimental kernel - for testing purposes only
 
