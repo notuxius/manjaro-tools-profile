@@ -3,6 +3,11 @@
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
 
+if [[ $EUID -eq 0 ]]; then
+    echo "This script must not be run as root"
+    exit 1
+fi
+
 cd ${HOME}
 
 # create if not exists manjaro tools folder in user's home directory
@@ -73,15 +78,13 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
         
         # select latest non-realtime kernel availabe in unstable repo
-        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tvz | awk '{print $6}' | grep -- '^linux[0-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | cut -c6- | sort -nr | head -n1)
-        sed -i "s|# kernel=.*|kernel=linux${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
-        echo "Changed kernel in manjaro tools configuration file to linux${latest_nonrt_kernel} - latest non-realtime available"
-        
-        echo "If ISO doesn't build with latest linux${latest_nonrt_kernel} kernel - try other versions available"
+        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+        sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
+        echo "If ISO doesn't build with latest (non-rt) ${latest_nonrt_kernel} kernel - try other available kernels"
             if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
-                mhwd-kernel -l | cut -c11- | grep '^[0-9]' | grep '[^rt]$' | grep -vw "${latest_nonrt_kernel}" | sort -nr
+                mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep '[^rt]$' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
             fi
-        echo "or comment out 'kernel=...' string in manjaro tools configuration file in your home directory"
+        echo "change or comment out 'kernel=...' string in manjaro tools configuration file in your home directory"
         ;;
         
   *) echo "Unable to select best build mirror and latest kernel - they could be changed manually in manjaro tools configuration file"
