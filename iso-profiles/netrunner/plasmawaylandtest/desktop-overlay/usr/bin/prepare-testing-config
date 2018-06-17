@@ -78,11 +78,11 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
         
         # select latest non-realtime kernel availabe in unstable repo
-        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v '^linux3' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
         sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
         echo "If ISO doesn't build with latest (non-rt) ${latest_nonrt_kernel} kernel - try other available kernels"
             if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
-                mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep '[^rt]$' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
+                mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep -v '^linux3' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
             fi
         echo "change or comment out 'kernel=...' string in manjaro tools configuration file in your home directory"
         ;;
