@@ -2,6 +2,12 @@
 
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
+#     target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
+
+# not@not-pc ~ % sed '/stable/{s/stable/unstable/;q}; /stable/!{q100}' .config/manjaro-tools/manjaro-tools.conf  
+# echo "# target_branch=stable" | sed '/# target_branch=stable/{s/# target_branch=stable/target_branch=unstable/;q}; /status/!{q100}'
+
+
 
 if [[ $EUID -eq 0 ]]; then
     echo "This script must not be run as root"
@@ -10,7 +16,7 @@ fi
 
 cd ${HOME}
 
-# create if not exists manjaro tools folder in user's home directory
+# create if not exists manjaro tools folder in current current user's home directory
 mkdir -p $(eval echo .config/manjaro-tools/)
 
 # check if manjaro tools config file exists
@@ -27,9 +33,9 @@ else
     exit 1
 fi
 
-# check if user's home config file already exists - and displays info and confirmation for overwriting it -
-# then copy system-wide manjaro tools config file into user's home directory for further modifications - 
-# user's home config file take precedence over the /etc system's one
+# check if current current user's home config file already exists - and displays info and confirmation for overwriting it -
+# then copy system-wide manjaro tools config file into current current user's home directory for further modifications - 
+# current current user's home config file take precedence over the /etc system's one
 if [[ -w $target_conf_file ]]; then
     echo "You have existing manjaro tools configuration file in your home directory"
     cp -i $source_conf_file $target_conf_file
@@ -38,48 +44,48 @@ else
     cp $source_conf_file $target_conf_file
 fi
 
-err_prepare_text="Could not make modifications in user's home manjaro tools configuration file\n"
-err_profile_text="Could not make modifications in manjaro tools profile configuration file\n"
+err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
+err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
 
 # use unstable repos
-sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || { printf "$err_prepare_text"; }
+cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || printf "$err_prepare_text"
 
-# change iso label from Manjaro into Netrunner
-sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || { printf "$err_prepare_text"; }
+# change iso label from Manjaro to Netrunner Rolling Wayland
+cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || printf "$err_prepare_text"
 
 # change distribution release to ...codename-month.day.hour... version format
 if [[ -r $lsb_release_file ]]; then
-sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
+    cat $target_conf_file | grep -q '# dist_release' && sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
 fi
 
 # change distribution release to ...BUILD_ID.day.hour... version format
 # if [ -f $lsb_release_file ]; then
 #     source /etc/lsb-release
 #     if [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}$ ]]; then
-#         sed -i 's|# dist_release=.*|dist_release=\$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").\$(date --utc +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+#         sed -i 's|# dist_release=.*|dist_release=\$(source /etc/lsb-release; echo "${DISTRIB_RELEASE}").\$(date --utc +%-d.%-H)|' $target_conf_file || printf "$err_prepare_text"
 #     elif [[ $DISTRIB_RELEASE =~ ^[0-9]{4}.[0-9]{1,2}.[0-9]{2}.[0-9]{2}$ ]]; then
-#         sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").\$(date --utc +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+#         sed -i 's|# dist_release=.*|dist_release=$(source /etc/lsb-release; DISTRIB_RELEASE=${DISTRIB_RELEASE%.*}; echo "${DISTRIB_RELEASE%.*}").\$(date --utc +%-d.%-H)|' $target_conf_file || printf "$err_prepare_text"
 #     else
 #         if [ -f $os_release_file ]; then
 #             source /usr/lib/os-release
-#             sed -i 's|# dist_release=.*|dist_release=$(source /usr/lib/os-release; DISTRIB_RELEASE=$(echo $BUILD_ID \| sed "s\|\\.0\|\\.\|"); echo "${DISTRIB_RELEASE}").\$(date --utc +%-d.%-H)|' $target_conf_file || { printf "$err_prepare_text"; }
+#             sed -i 's|# dist_release=.*|dist_release=$(source /usr/lib/os-release; DISTRIB_RELEASE=$(echo $BUILD_ID \| sed "s\|\\.0\|\\.\|"); echo "${DISTRIB_RELEASE}").\$(date --utc +%-d.%-H)|' $target_conf_file || printf "$err_prepare_text"
 #         fi
 #     fi
 # fi
 
-# check if internet is availabe - select best mirror and clone latest github profile into user's home directory
+# check if internet is availabe - select best mirror and clone latest github profile into current current user's home directory
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
   [23]) echo "'sudo pacman-mirrors -f 5' command could be used for getting updated mirrors list"
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-        sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || { printf "$err_prepare_text"; }
+        sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "$err_prepare_text"
         echo "Changed build mirror in manjaro tools configuration file to ${best_server_match}"
         git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git
-        echo "Build profile is located in user's home directory"
+        echo "Build profile is located in current user's home directory"
         echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
         
         # select latest non-realtime kernel availabe in unstable repo
         latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v '^linux3' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-        sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || { printf "$err_prepare_text"; }
+        sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "$err_prepare_text"
         echo "If ISO doesn't build with latest (non-rt) ${latest_nonrt_kernel} kernel - try other available kernels"
             if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
                 mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep -v '^linux3' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
@@ -109,8 +115,8 @@ if [[ ${#1} -gt 0 ]]; then
                 case "${arg}" in
                     m|c) # comment/remove additional desktop packages and systemd services
                          # change distribution release to ...codename-minimal-month.day.hour... version format
-                         sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || { printf "$err_prepare_text"; }
-                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
+                         sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
+                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
                          sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || { printf "$err_profile_text"; } 
                          sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || { printf "$err_profile_text"; } 
                          sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || { printf "$err_profile_text"; } 
@@ -120,8 +126,8 @@ if [[ ${#1} -gt 0 ]]; then
                     
                     f|u) # uncomment/include additional desktop packages and systemd services
                          # change distribution release to ...codename-month.day.hour... version format
-                         sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || { printf "$err_prepare_text"; }
-                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || { printf "$err_prepare_text"; }
+                         sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
+                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
                          sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || { printf "$err_profile_text"; }
                          sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || { printf "$err_profile_text"; }
                          sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || { printf "$err_profile_text"; }
