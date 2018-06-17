@@ -420,6 +420,7 @@ plasma-wayland-session
 qt5-virtualkeyboard
 liquidshell                       # minimal-packages-toggle
 plasma5-applets-redshift-control  # minimal-packages-toggle
+grml-zsh-config
 plasma-browser-integration
 drkonqi
 strace
