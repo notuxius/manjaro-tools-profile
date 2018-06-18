@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# TODO add checking of sed success completion
-# https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
-#     target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
-
-# not@not-pc ~ % sed '/stable/{s/stable/unstable/;q}; /stable/!{q100}' .config/manjaro-tools/manjaro-tools.conf  
-# echo "# target_branch=stable" | sed '/# target_branch=stable/{s/# target_branch=stable/target_branch=unstable/;q}; /status/!{q100}'
-
-
-
 if [[ $EUID -eq 0 ]]; then
     echo "This script must not be run as root"
     exit 1
@@ -21,14 +12,17 @@ mkdir -p $(eval echo .config/manjaro-tools/)
 
 # check if manjaro tools config file exists
 if [[ -r $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]]; then
-    echo "System manjaro tools configuration found"
+    printf "System-wide manjaro tools configuration found\n"
+    echo
     source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
     target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
     profile_conf_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/profile.conf)
     lsb_release_file=$(eval echo /etc/lsb-release)
     # os_release_file=$(eval echo /usr/lib/os-release)
 else
-    echo "System manjaro tools configuration not found"
+    echo "System-wide manjaro tools configuration not found"
+    echo "Manjaro tools are required for building profile ISOs"
+    printf "It can be obtained by installing next packages:\nmanjaro-tools-base\nmanjaro-tools-iso\nmanjaro-tools-pkg\nmanjaro-tools-yaml"
     echo "Exiting..."
     exit 1
 fi
@@ -37,26 +31,31 @@ fi
 # then copy system-wide manjaro tools config file into current current user's home directory for further modifications - 
 # current current user's home config file take precedence over the /etc system's one
 if [[ -w $target_conf_file ]]; then
-    echo "You have existing manjaro tools configuration file in your home directory"
+    echo "There is existing manjaro tools configuration file in current user's home folder"
     cp -i $source_conf_file $target_conf_file
+    echo
 else
-    echo "Copying system manjaro tools configuration file in your home directory"
+    echo "Copying system manjaro tools configuration file into current user's home folder"
     cp $source_conf_file $target_conf_file
+    echo
 fi
 
-err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
+# err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
+err_prepare_text="defaults were not modified in current user's home manjaro tools configuration file\n"
 err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
 
-# use unstable repos
-cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file || printf "$err_prepare_text"
+# change profile build repositories to unstable
+cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file && printf "Changed profile build repositories to unstable\n" || printf "Profile build repositories $err_prepare_text"
 
-# change iso label from Manjaro to Netrunner Rolling Wayland
-cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file || printf "$err_prepare_text"
+# change profile ISO label from Manjaro to Netrunner Rolling Wayland
+cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file && printf "Changed profile ISO label from Manjaro to Netrunner Rolling Wayland\n" || printf "Profile ISO label $err_prepare_text"
 
-# change distribution release to ...codename-month.day.hour... version format
+# change profile distribution release to ...codename-year.month.day.hour... version format
 if [[ -r $lsb_release_file ]]; then
-    cat $target_conf_file | grep -q '# dist_release' && sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
+    cat $target_conf_file | grep -q '# dist_release=' && sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file && printf "Changed profile distribution release to ...codename-year.month.day.hour... version format\n" || printf "Profile distribution release version $err_prepare_text"
 fi
+
+echo
 
 # change distribution release to ...BUILD_ID.day.hour... version format
 # if [ -f $lsb_release_file ]; then
@@ -73,28 +72,50 @@ fi
 #     fi
 # fi
 
-# check if internet is availabe - select best mirror and clone latest github profile into current current user's home directory
+# check if internet is availabe
+echo "Checking internet connection availability..."
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23]) echo "'sudo pacman-mirrors -f 5' command could be used for getting updated mirrors list"
+  [23]) read -p "Update mirrors list for selecting best build mirror and latest build kernel? " -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            sudo pacman-mirrors -f 5
+            echo
+        fi
+        
+        # select best build mirror
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-        sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "$err_prepare_text"
-        echo "Changed build mirror in manjaro tools configuration file to ${best_server_match}"
-        git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git
-        echo "Build profile is located in current user's home directory"
-        echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
+        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text"
         
         # select latest non-realtime kernel availabe in unstable repo
         latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v '^linux3' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-        sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "$err_prepare_text"
-        echo "If ISO doesn't build with latest (non-rt) ${latest_nonrt_kernel} kernel - try other available kernels"
-            if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
-                mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep -v '^linux3' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
+        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file && printf "Selected ${latest_nonrt_kernel} - latest non-rt available kernel\n" || printf "Profile build kernel $err_prepare_text"
+        
+        if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
+            printf "Available 4.x kernels:\n"
+            mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep -v '^linux3' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
+            echo
+        fi
+        
+        if [[ -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+            echo "There is existing build profile folder in current user's home folder"
+            read -p "Delete existing build profile folder and redownload it? " -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                rm -rf plasma-wayland-testing-manjaro-tools-profile/
+                echo "Downloading build profile folder into current user's home folder..."
+                git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git 2> /dev/null
             fi
-        echo "change or comment out 'kernel=...' string in manjaro tools configuration file in your home directory"
+        fi
+
         ;;
         
-  *) echo "Unable to select best build mirror and latest kernel - they could be changed manually in manjaro tools configuration file"
-     echo "Unable to download profile - it could be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile page"
+  *) echo "Unable to select latest kernel"
+
+     echo "They can be changed manually in manjaro tools configuration file"
+     echo "Unable to download build profile  - it can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile page"
+     
+     
+     
      ;;
 esac
 
@@ -114,7 +135,7 @@ if [[ ${#1} -gt 0 ]]; then
             while getopts "${opts}" arg; do
                 case "${arg}" in
                     m|c) # comment/remove additional desktop packages and systemd services
-                         # change distribution release to ...codename-minimal-month.day.hour... version format
+                         # change distribution release to ...codename-minimal-year.month.day.hour... version format
                          sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
                          sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
                          sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || { printf "$err_profile_text"; } 
@@ -125,7 +146,7 @@ if [[ ${#1} -gt 0 ]]; then
                          ;;
                     
                     f|u) # uncomment/include additional desktop packages and systemd services
-                         # change distribution release to ...codename-month.day.hour... version format
+                         # change distribution release to ...codename-year.month.day.hour... version format
                          sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
                          sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
                          sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || { printf "$err_profile_text"; }
@@ -149,5 +170,7 @@ if [[ ${#1} -gt 0 ]]; then
     fi
 fi
 
+echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
+echo
 echo 'Done.'
 exit 0
