@@ -10,7 +10,7 @@ fi
 # check free space in and display warning 
 disk_free_space=$(df -h / | tail -1 | awk '{print $4}' | sed s/G//)
 
-if [[ $disk_free_space -lt 30 ]]; then
+if [[ $(printf '%.*f' 0 $disk_free_space) -lt 30 ]]; then
     echo "Low free disk space on root partition - profile might not built"
     echo
 fi
