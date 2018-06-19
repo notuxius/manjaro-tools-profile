@@ -7,6 +7,14 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
+# check free space in and display warning 
+disk_free_space=$(df -h / | tail -1 | awk '{print $4}' | sed s/G//)
+
+if [[ $disk_free_space -lt 30 ]]; then
+    echo "Low free disk space on root partition - profile might not built"
+    echo
+fi
+
 err_opt_text="Use -m/-c or -f/-u single option for desktop packages toggling. Exiting..."
 
 if [[ ${#1} -gt 2 ]]; then
