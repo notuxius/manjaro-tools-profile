@@ -7,10 +7,10 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-err_arg_text="Use -m/-c or -f/-u single argument for desktop packages toggling. Exiting..."
+$err_opt_text="Use -m/-c or -f/-u single option for desktop packages toggling. Exiting..."
 
 if [[ ${#1} -gt 2 ]]; then
-    echo "$err_arg_text"
+    echo "$err_opt_text"
     exit 1
 fi
 
@@ -173,7 +173,7 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
        ;;
 esac
 
-if [[ ${#1} -gt 0 ]]; then
+if [[ ${#1} -gt 1 ]]; then
     if [[ -w $desktop_packages_file ]]; then
         opts='mcfu'
 
@@ -201,13 +201,11 @@ if [[ ${#1} -gt 0 ]]; then
                         sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
                         ;;
                 
-                *) echo "$err_arg_text"
+                *) echo "$err_opt_text"
                    exit 1
                    ;;
             esac
         done
-        
-        echo
         
         # echo "Contents of desktop packages file after toggling comments:"
         # cat $desktop_packages_file

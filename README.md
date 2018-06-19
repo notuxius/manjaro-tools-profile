@@ -18,7 +18,7 @@ https://wiki.manjaro.org/index.php?title=Build_Manjaro_ISOs_with_buildiso
 
 'prepare-testing-config' script can be used for initial autoconfiguring of testing setup
 
-The script can be launched with -m/-c or -f/-u single argument for desktop packages toggling
+The script can be launched with -m/-c or -f/-u single option for desktop packages toggling
 
 Full build profile is set by default
 
