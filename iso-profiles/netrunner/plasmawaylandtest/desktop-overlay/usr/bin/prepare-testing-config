@@ -1,7 +1,16 @@
 #!/bin/bash
 
+echo
+
 if [[ $EUID -eq 0 ]]; then
-    echo "This script must not be run as root"
+    echo "This script must not be run as root. Exiting..."
+    exit 1
+fi
+
+err_arg_text="Use -m/-c or -f/-u single argument for desktop packages toggling. Exiting..."
+
+if [[ ${#1} -gt 2 ]]; then
+    echo "$err_arg_text"
     exit 1
 fi
 
@@ -12,40 +21,56 @@ mkdir -p $(eval echo .config/manjaro-tools/)
 
 # check if manjaro tools config file exists
 if [[ -r $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]]; then
-    printf "System-wide manjaro tools configuration found\n"
+    echo "System-wide manjaro tools configuration found"
     echo
     source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
     target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
+    # target_backup_conf_dir=$(eval echo .config/manjaro-tools/manjaro-tools-conf-backups/)
     profile_conf_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/profile.conf)
     lsb_release_file=$(eval echo /etc/lsb-release)
     # os_release_file=$(eval echo /usr/lib/os-release)
 else
     echo "System-wide manjaro tools configuration not found"
     echo "Manjaro tools are required for building profile ISOs"
-    printf "It can be obtained by installing next packages:\nmanjaro-tools-base\nmanjaro-tools-iso\nmanjaro-tools-pkg\nmanjaro-tools-yaml"
-    echo "Exiting..."
+    printf "It can be obtained by installing next packages:\nmanjaro-tools-base\nmanjaro-tools-iso\nmanjaro-tools-pkg\nmanjaro-tools-yaml\nExiting..."
     exit 1
 fi
+
+# toggling of minimal desktop packages
+desktop_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
+
+# err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
+err_prepare_text="default was not modified in current user's home manjaro tools configuration file\n"
+err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
+err_desktop_packages_min_text="Desktop packages file is already set for minimal build - no modifications were made in it"
+err_desktop_packages_full_text="Desktop packages file is already set for full build - no modifications were made in it"
 
 # check if current current user's home config file already exists - and displays info and confirmation for overwriting it -
 # then copy system-wide manjaro tools config file into current current user's home directory for further modifications - 
 # current current user's home config file take precedence over the /etc system's one
 if [[ -w $target_conf_file ]]; then
     echo "There is existing manjaro tools configuration file in current user's home folder"
-    cp -i $source_conf_file $target_conf_file
-    echo
+    read -p "Backup and overwrite existing manjaro tools configuration file? " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
+        echo
+        # mkdir -p $target_backup_conf_dir
+        # $target_conf_file-$(date +%Y-%m-%d-%H-%M-%S).bak
+        mv -f $target_conf_file $target_conf_file.bak
+        cp -f $source_conf_file $target_conf_file
+    else
+        echo
+        echo
+    fi
+    
 else
     echo "Copying system manjaro tools configuration file into current user's home folder"
-    cp $source_conf_file $target_conf_file
+    cp -f $source_conf_file $target_conf_file
     echo
 fi
 
-# err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
-err_prepare_text="defaults were not modified in current user's home manjaro tools configuration file\n"
-err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
-
-# change profile build repositories to unstable
-cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file && printf "Changed profile build repositories to unstable\n" || printf "Profile build repositories $err_prepare_text"
+# change profile build repository to unstable
+cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file && printf "Changed profile build repository to unstable\n" || printf "Profile build repository $err_prepare_text"
 
 # change profile ISO label from Manjaro to Netrunner Rolling Wayland
 cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file && printf "Changed profile ISO label from Manjaro to Netrunner Rolling Wayland\n" || printf "Profile ISO label $err_prepare_text"
@@ -75,99 +100,126 @@ echo
 # check if internet is availabe
 echo "Checking internet connection availability..."
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-  [23]) read -p "Update mirrors list for selecting best build mirror and latest build kernel? " -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            sudo pacman-mirrors -f 5
-            echo
-        fi
-        
-        # select best build mirror
-        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text"
-        
-        # select latest non-realtime kernel availabe in unstable repo
-        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[0-9]' | grep -v '^linux3' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file && printf "Selected ${latest_nonrt_kernel} - latest non-rt available kernel\n" || printf "Profile build kernel $err_prepare_text"
-        
-        if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
-            printf "Available 4.x kernels:\n"
-            mhwd-kernel -l | cut -c6- | grep '^linux[0-9]' | grep -v '^linux3' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
-            echo
-        fi
-        
-        if [[ -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
-            echo "There is existing build profile folder in current user's home folder"
-            read -p "Delete existing build profile folder and redownload it? " -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                rm -rf plasma-wayland-testing-manjaro-tools-profile/
-                echo "Downloading build profile folder into current user's home folder..."
-                git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git 2> /dev/null
-            fi
-        fi
+    [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git # 2> /dev/null)'
+          read -p "Update mirrors list for selecting best build mirror and latest profile kernel? " -n 1 -r
+          if [[ $REPLY =~ ^[Yy]$ ]]; then
+              echo
+              echo
+              sudo pacman-mirrors -f 5
+              echo
+          else
+              echo
+              echo
+          fi
 
-        ;;
-        
-  *) echo "Unable to select latest kernel"
+          # select best build mirror
+          best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
+          cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text"
+          echo
 
-     echo "They can be changed manually in manjaro tools configuration file"
-     echo "Unable to download build profile  - it can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile page"
-     
-     
-     
-     ;;
+          # select latest non-realtime kernel availabe in unstable repo
+          latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+          cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file && printf "Selected ${latest_nonrt_kernel} - latest non-rt available kernel\n" || printf "Profile kernel $err_prepare_text"
+
+          if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
+              printf "Available 4.x kernels:\n"
+              mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
+          fi
+          echo
+
+          if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+              echo "There is non-empty build profile folder in current user's home folder"
+              read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
+              if [[ $REPLY =~ ^[Yy]$ ]]; then
+                  echo
+                  echo
+                  date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
+                  if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
+                      echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
+                      echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
+                      echo
+                  else
+                      echo
+                      echo
+                  fi
+                  if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
+                      echo "Existing profile folder was removed from current user's home folder"
+                      echo
+                  else
+                      echo
+                      echo
+                  fi
+                  
+                  # echo "Downloading build profile folder into current user's home folder..."
+                  eval $git_clone_profile
+                  echo
+              else
+                  echo
+                  echo
+              fi
+          else
+              # echo "Downloading build profile folder into current user's home folder..."
+              eval $git_clone_profile
+              echo
+          fi
+          ;;
+        
+    *) echo "Unable to select best build mirror and latest profile kernel"
+       echo "They can be changed manually in manjaro tools configuration file in current user's home folder"
+       echo
+       echo "Unable to download build profile"
+       echo "It can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile"
+       echo
+       ;;
 esac
-
-# toggling of minimal desktop packages
-desktop_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
 
 if [[ ${#1} -gt 0 ]]; then
     if [[ -w $desktop_packages_file ]]; then
         opts='mcfu'
 
-        err_arg_text="Use -m/-c or -f/-u argument for desktop packages toggling"
+        while getopts "${opts}" arg; do
+            case "${arg}" in
+                m|c) # comment/remove additional desktop packages and systemd services
+                        # change distribution release to ...codename-minimal-year.month.day.hour... version format
+                        echo "Minimal build - without some additional desktop packages and systemd services"
+                        
+                        cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
+                        sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
+                        sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
+                        sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
+                        sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || printf "$err_profile_text" 
+                        ;;
+                
+                f|u) # uncomment/include additional desktop packages and systemd services
+                        # change distribution release to ...codename-year.month.day.hour... version format
+                        echo "Full build - with some additional desktop packages and systemd services"
 
-        if [[ ${#1} -gt 2 ]]; then
-            echo $err_arg_text
-            exit 1
-        else
-            while getopts "${opts}" arg; do
-                case "${arg}" in
-                    m|c) # comment/remove additional desktop packages and systemd services
-                         # change distribution release to ...codename-minimal-year.month.day.hour... version format
-                         sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
-                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
-                         sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || { printf "$err_profile_text"; } 
-                         sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || { printf "$err_profile_text"; } 
-                         sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || { printf "$err_profile_text"; } 
-                         
-                         echo "Minimal build - some additional desktop packages and systemd services will not be enabled"
-                         ;;
-                    
-                    f|u) # uncomment/include additional desktop packages and systemd services
-                         # change distribution release to ...codename-year.month.day.hour... version format
-                         sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || printf "$err_prepare_text"
-                         sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
-                         sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || { printf "$err_profile_text"; }
-                         sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || { printf "$err_profile_text"; }
-                         sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || { printf "$err_profile_text"; }
-                         
-                         echo "Full build - some additional desktop packages and systemd services will be enabled"
-                         ;;
-                    
-                    *) echo $err_arg_text; exit 1
-                       ;;
-                esac
-            done
-        fi
+                        cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
+                        sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
+                        sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
+                        sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
+                        sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
+                        ;;
+                
+                *) echo "$err_arg_text"
+                   exit 1
+                   ;;
+            esac
+        done
         
-        # echo "Contents of Desktop-Packages file after toggling comments:"
+        echo
+        
+        # echo "Contents of desktop packages file after toggling comments:"
         # cat $desktop_packages_file
         
     else
-        echo "Desktop packages files cannot be changed"
+        echo "Cannot make modifications in desktop packages file"
+        echo
     fi
+    
+else
+    echo "Normal build - desktop packages and systemd services were not modified"
+    echo
 fi
 
 echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
