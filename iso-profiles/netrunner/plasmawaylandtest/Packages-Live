@@ -1,4 +1,4 @@
-calamares
+calamares-git
 KERNEL-bbswitch  # minimal-kernel-modules-toggle
 KERNEL-broadcom-wl  # minimal-kernel-modules-toggle
 KERNEL-r8168  # minimal-kernel-modules-toggle

@@ -422,7 +422,10 @@ liquidshell                       # minimal-packages-toggle
 plasma5-applets-redshift-control  # minimal-packages-toggle
 grml-zsh-config
 plasma-browser-integration
+qt5-webview
 drkonqi
+cmake
+extra-cmake-modules
 strace
 valgrind
 pkgfile
