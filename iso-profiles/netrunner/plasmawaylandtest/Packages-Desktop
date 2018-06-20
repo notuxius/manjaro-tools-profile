@@ -71,6 +71,11 @@ make
 patch
 pkg-config
 >multilib lib32-flex
+cmake
+extra-cmake-modules
+strace
+valgrind
+pkgfile
 
 ## Additional packages for AUR support
 git
@@ -282,7 +287,7 @@ google-talkplugin  # minimal-packages-toggle
 grub-customizer
 handbrake  # minimal-packages-toggle
 pidgin  # minimal-packages-toggle
-smplayer
+smplayer  # minimal-packages-toggle
 yarock-qt5  # minimal-packages-toggle
 mpv
 # transmission-qt
@@ -387,6 +392,7 @@ qtcurve-qt4
 qtcurve-utils
 qt5-quickcontrols2
 qt5-websockets
+qt5-webview  # Croeso build package
 quota-tools
 kross-interpreters
 wget
@@ -399,9 +405,11 @@ kcm-plasma-services
 kcm-samba-mounter  # minimal-packages-toggle
 ocs-url
 plasma5-applets-simplemenu  # minimal-packages-toggle
-plasma5-applets-volumewin7mixer
+plasma5-applets-volumewin7mixer  # minimal-packages-toggle
 icedtea-web  # minimal-packages-toggle
 skypeforlinux-stable-bin  # minimal-packages-toggle
+python-shiboken2  # Falkon additional package
+python-pyside2  # Falkon additional package
 
 ## KDE PIM
 kdepim-meta  # minimal-packages-toggle
@@ -422,13 +430,7 @@ liquidshell                       # minimal-packages-toggle
 plasma5-applets-redshift-control  # minimal-packages-toggle
 grml-zsh-config
 plasma-browser-integration
-qt5-webview
 drkonqi
-cmake
-extra-cmake-modules
-strace
-valgrind
-pkgfile
 xorg-xhost
 pacmanlogviewer
 ncdu
