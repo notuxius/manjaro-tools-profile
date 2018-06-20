@@ -109,11 +109,13 @@ echo
 echo "Checking internet connection availability..."
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
     [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git # 2> /dev/null)'
-          read -p "Update mirrors list for selecting best build mirror and latest profile kernel? " -n 1 -r
+          read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
           if [[ $REPLY =~ ^[Yy]$ ]]; then
               echo
               echo
               sudo pacman-mirrors -f 5
+              echo
+              sudo pacman -Sy
               echo
           else
               echo
