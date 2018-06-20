@@ -184,7 +184,7 @@ kate
 kcalc  # minimal-packages-toggle
 keditbookmarks  # minimal-packages-toggle
 kfind  # minimal-packages-toggle
-kdeconnect  # minimal-packages-toggle
+kdeconnect
 okular  # minimal-packages-toggle
 kdenetwork-filesharing  # minimal-packages-toggle
 kdenlive  # minimal-packages-toggle
@@ -288,7 +288,7 @@ mpv
 # transmission-qt
 virtualbox
 virtualbox-guest-iso
-KERNEL-virtualbox-host-modules
+KERNEL-virtualbox-host-modules  # minimal-kernel-modules-toggle
 # x11vnc
 vokoscreen
 
@@ -429,6 +429,7 @@ pkgfile
 xorg-xhost
 pacmanlogviewer
 ncdu
+vim
 ufw                               # minimal-packages-toggle
 krfb                              # minimal-packages-toggle
 krdc                              # minimal-packages-toggle

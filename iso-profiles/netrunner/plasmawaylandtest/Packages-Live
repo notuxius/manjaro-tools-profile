@@ -1,8 +1,8 @@
 calamares
-KERNEL-bbswitch
-KERNEL-broadcom-wl
-KERNEL-r8168
-# KERNEL-rt3562sta
+KERNEL-bbswitch  # minimal-kernel-modules-toggle
+KERNEL-broadcom-wl  # minimal-kernel-modules-toggle
+KERNEL-r8168  # minimal-kernel-modules-toggle
+# KERNEL-rt3562sta  # minimal-kernel-modules-toggle
 manjaro-live-skel
 mkinitcpio-nfs-utils
 >multilib lib32-libxvmc
