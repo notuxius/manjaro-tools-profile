@@ -1,8 +1,8 @@
-KERNEL-bbswitch
-KERNEL-broadcom-wl
-KERNEL-r8168
-# KERNEL-rt3562sta
-KERNEL-virtualbox-guest-modules
+KERNEL-bbswitch  # available-kernel-modules-toggle
+KERNEL-broadcom-wl  # available-kernel-modules-toggle
+KERNEL-r8168  # available-kernel-modules-toggle
+# KERNEL-rt3562sta  # available-kernel-modules-toggle
+KERNEL-virtualbox-guest-modules  # available-kernel-modules-toggle
 libva-intel-driver
 libva-mesa-driver
 libva-vdpau-driver
@@ -15,10 +15,10 @@ mesa-vdpau
 >multilib lib32-libxvmc
 >multilib lib32-primus
 >nonfree_default catalyst-utils
->nonfree_default KERNEL-catalyst
->nonfree_default KERNEL-nvidia
->nonfree_default KERNEL-nvidia-304xx
->nonfree_default KERNEL-nvidia-340xx
+>nonfree_default KERNEL-catalyst  # available-kernel-modules-toggle
+>nonfree_default KERNEL-nvidia  # available-kernel-modules-toggle
+>nonfree_default KERNEL-nvidia-304xx  # available-kernel-modules-toggle
+>nonfree_default KERNEL-nvidia-340xx  # available-kernel-modules-toggle
 >nonfree_default nvidia-304xx-utils
 >nonfree_default nvidia-340xx-utils
 >nonfree_default nvidia-utils

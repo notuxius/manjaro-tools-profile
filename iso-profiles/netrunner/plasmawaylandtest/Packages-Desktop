@@ -188,7 +188,7 @@ filelight  # minimal-packages-toggle
 kate
 kcalc  # minimal-packages-toggle
 keditbookmarks  # minimal-packages-toggle
-kfind  # minimal-packages-toggle
+kfind
 kdeconnect
 okular  # minimal-packages-toggle
 kdenetwork-filesharing  # minimal-packages-toggle
@@ -293,7 +293,7 @@ mpv
 # transmission-qt
 virtualbox
 virtualbox-guest-iso
-KERNEL-virtualbox-host-modules  # minimal-kernel-modules-toggle
+KERNEL-virtualbox-host-modules  # available-kernel-modules-toggle
 # x11vnc
 vokoscreen
 
