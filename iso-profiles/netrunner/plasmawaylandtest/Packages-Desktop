@@ -2,7 +2,7 @@
 avahi
 networkmanager
 networkmanager-openconnect  # minimal-packages-toggle
-networkmanager-openvpn  # minimal-packages-toggle
+networkmanager-openvpn
 networkmanager-pptp  # minimal-packages-toggle
 networkmanager-vpnc  # minimal-packages-toggle
 # networkmanager-dispatcher-ntpd
@@ -394,7 +394,7 @@ qt5-quickcontrols2
 qt5-websockets
 qt5-webview  # Croeso build package
 quota-tools
-kross-interpreters
+# kross-interpreters
 wget
 # imwheel
 flatzebra
