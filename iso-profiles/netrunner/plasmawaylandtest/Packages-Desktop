@@ -293,7 +293,7 @@ mpv
 # transmission-qt
 virtualbox
 virtualbox-guest-iso
-KERNEL-virtualbox-host-modules  # available-kernel-modules-toggle
+KERNEL-virtualbox-host-modules  # available-kernel-modules-drives-toggle
 # x11vnc
 vokoscreen
 
