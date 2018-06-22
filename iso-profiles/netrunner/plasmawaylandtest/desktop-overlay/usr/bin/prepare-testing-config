@@ -46,6 +46,8 @@ fi
 
 # toggling of minimal desktop packages
 desktop_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Desktop)
+live_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Live)
+mhwd_packages_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/Packages-Mhwd)
 
 # err_prepare_text="Cannot modify one of the defaults in current user's home manjaro tools configuration file\n"
 err_prepare_text="was not modified in current user's home manjaro tools configuration file\n"
@@ -105,82 +107,106 @@ echo
 #     fi
 # fi
 
-# check if internet is availabe
+# check if internet is available
 echo "Checking internet connection availability..."
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
     [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git # 2> /dev/null)'
-          read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
-          if [[ $REPLY =~ ^[Yy]$ ]]; then
-              echo
-              echo
-              sudo pacman-mirrors -f 5
-              echo
-              sudo pacman -Sy
-              echo
-          else
-              echo
-              echo
-          fi
+        read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo
+            echo
+            sudo pacman-mirrors -f 5
+            echo
+            sudo pacman -Sy
+            echo
+        else
+            echo
+            echo
+        fi
 
-          # select best build mirror
-          best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-          cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text"
-          echo
+        # select best build mirror
+        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
+        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text"
+        echo
 
-          # select latest non-realtime kernel availabe in unstable repo
-          latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-          cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file && printf "Selected ${latest_nonrt_kernel} - latest non-rt available kernel\n" || printf "Profile kernel $err_prepare_text"
-
-          if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
-              printf "Available 4.x kernels:\n"
-              mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
-          fi
-          echo
-
-          if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
-              echo "There is non-empty build profile folder in current user's home folder"
-              read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
-              if [[ $REPLY =~ ^[Yy]$ ]]; then
-                  echo
-                  echo
-                  date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
-                  if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
-                      echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
-                      echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
-                      echo
-                  else
-                      echo
-                      echo
-                  fi
-                  if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
-                      echo "Existing profile folder was removed from current user's home folder"
-                      echo
-                  else
-                      echo
-                      echo
-                  fi
-                  
-                  # echo "Downloading build profile folder into current user's home folder..."
-                  eval $git_clone_profile
-                  echo
-              else
-                  echo
-                  echo
-              fi
-          else
-              # echo "Downloading build profile folder into current user's home folder..."
-              eval $git_clone_profile
-              echo
-          fi
-          ;;
+        # select latest non-realtime kernel availabe in unstable repo
+        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file && printf "Selected ${latest_nonrt_kernel} - latest non-rt available kernel\n" || printf "Profile kernel $err_prepare_text"
         
-    *) echo "Unable to select best build mirror and latest profile kernel"
-       echo "They can be changed manually in manjaro tools configuration file in current user's home folder"
-       echo
-       echo "Unable to download build profile"
-       echo "It can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile"
-       echo
-       ;;
+        source $target_conf_file
+        
+        current_kernel=$kernel
+              
+        available_kernel_modules=$(wget -q -O - ${best_server_match}/unstable/extra/x86_64/extra.db.tar.gz | tar -tz | grep -v 'desc' | grep ${current_kernel} | sed -r "s|-[0-9]+\.[0-9].*||" | sed -r "s|-[0-9]+\:[0-9].*||" | sed -r "s|-[0-9]{4}.*||" | sed "s|${current_kernel}|KERNEL|")
+        
+        while read -r line; do
+            sed -ir "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $desktop_packages_file
+        done <<< $available_kernel_modules
+        
+        while read -r line; do
+            sed -ir "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $live_packages_file
+        done <<< $available_kernel_modules
+        
+        while read -r line; do
+            sed -ir "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $mhwd_packages_file
+        done <<< $available_kernel_modules
+
+        available_kernel_drivers=$(sed "s|KERNEL-||" <<< $available_kernel_modules)
+        
+        while read -r line; do
+            sed -ir "/$line-utils .*# available-kernel-drives-toggle$/ s|^# ||" $mhwd_packages_file
+        done <<< $available_kernel_drivers
+        
+        if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
+            printf "Available v4.x kernels:\n"
+            mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
+        fi
+        echo
+
+        if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+            echo "There is non-empty build profile folder in current user's home folder"
+            read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo
+                echo
+                date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
+                if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
+                    echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
+                    echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
+                    echo
+                else
+                    echo
+                    echo
+                fi
+                if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
+                    echo "Existing profile folder was removed from current user's home folder"
+                    echo
+                else
+                    echo
+                    echo
+                fi
+                
+                # echo "Downloading build profile folder into current user's home folder..."
+                eval $git_clone_profile
+                echo
+            else
+                echo
+                echo
+            fi
+        else
+            # echo "Downloading build profile folder into current user's home folder..."
+            eval $git_clone_profile
+            echo
+        fi
+        ;;
+        
+        *) echo "Unable to select best build mirror and latest profile kernel"
+        echo "They can be changed manually in manjaro tools configuration file in current user's home folder"
+        echo
+        echo "Unable to download build profile"
+        echo "It can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile"
+        echo
+        ;;
 esac
 
 if [[ ${#1} -gt 1 ]]; then
