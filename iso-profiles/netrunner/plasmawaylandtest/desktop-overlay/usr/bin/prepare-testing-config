@@ -128,11 +128,16 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 
         # select best build mirror
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file && printf "Changed profile build mirror to ${best_server_match}\n" || printf "Profile build mirror $err_prepare_text\n"
-
+        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "Profile build mirror $err_prepare_text"
+        
+        current_build_mirror=$(cat $target_conf_file | grep -E '^build_mirror=' | sed "s|build_mirror=||")
+        
+        echo "Current profile build mirror - ${current_build_mirror}"
+        echo
+        
         # select latest non-realtime kernel available in unstable repo
         latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text\n"
+        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text"
         
         if cat $target_conf_file | grep -q '^# kernel'; then
             current_kernel=$(sed -n "/^# kernel/ s|# kernel=||p" $target_conf_file)
@@ -140,7 +145,7 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
             current_kernel=$(sed -n "/^kernel/ s|kernel=||p" $target_conf_file)
         fi
         
-        echo "Current kernel - ${current_kernel}"
+        echo "Current profile kernel - ${current_kernel}"
         echo
         
 #         if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
@@ -189,51 +194,56 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         
         available_kernel_modules=$(wget -q -O - ${best_server_match}/unstable/extra/x86_64/extra.db.tar.gz | tar -tz | grep -v 'desc' | grep ${current_kernel} | sed -r "s|-[0-9]+\.[0-9].*||" | sed -r "s|-[0-9]+\:[0-9].*||" | sed -r "s|-[0-9]{4}.*||" | sed "s|${current_kernel}|KERNEL|")
         
-        # comment all modules and drivers
-        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
-        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
-        
-        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $live_packages_file
-        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $live_packages_file
-        
-        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
-        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
-        
-        # uncomment only available modules
-        while read -r line; do
-            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $desktop_packages_file
-        done <<< $available_kernel_modules
-        
-        while read -r line; do
-            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $live_packages_file
-        done <<< $available_kernel_modules
-        
-        while read -r line; do
-            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $mhwd_packages_file
-        done <<< $available_kernel_modules
+        if [[ -w $desktop_packages_file && -w $live_packages_file && -w $mhwd_packages_file ]]; then
+            # comment all modules and drivers
+            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
+            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
+            
+            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $live_packages_file
+            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $live_packages_file
+            
+            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
+            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
+            
+            # uncomment only available modules
+            while read -r line; do
+                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $desktop_packages_file
+            done <<< $available_kernel_modules
+            
+            while read -r line; do
+                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $live_packages_file
+            done <<< $available_kernel_modules
+            
+            while read -r line; do
+                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $mhwd_packages_file
+            done <<< $available_kernel_modules
 
-        available_kernel_drivers=$(sed "s|KERNEL-||" <<< $available_kernel_modules)
+            available_kernel_drivers=$(sed "s|KERNEL-||" <<< $available_kernel_modules)
+            
+            # uncomment only available drivers
+            while read -r line; do
+                sed -i "/$line-utils .*# available-kernel-drivers-toggle$/ s|^# ||" $mhwd_packages_file
+            done <<< $available_kernel_drivers
         
-        # uncomment only available drivers
-        while read -r line; do
-            sed -i "/$line-utils .*# available-kernel-drivers-toggle$/ s|^# ||" $mhwd_packages_file
-        done <<< $available_kernel_drivers
-        
-        selected_kernel_modules=$(grep '^[^#].* # available-kernel-modules-toggle$' $desktop_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $live_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||")
-        
-        selected_kernel_modules=$(sort <<< $selected_kernel_modules | uniq)
-        
-        printf "Selected kernel modules:\n${selected_kernel_modules}"
-        echo
-        echo
-        
-        selected_kernel_drivers=$(grep '^[^#].* # available-kernel-drivers-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|# available-kernel-drivers-toggle$||")
-        
-        selected_kernel_drivers=$(sort <<< $selected_kernel_drivers | uniq)
-        
-        printf "Selected kernel drivers:\n${selected_kernel_drivers}"
-        echo
-        echo
+            selected_kernel_modules=$(grep '^[^#].* # available-kernel-modules-toggle$' $desktop_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $live_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||")
+            
+            selected_kernel_modules=$(sort <<< $selected_kernel_modules | uniq)
+            
+            printf "Selected kernel modules:\n${selected_kernel_modules}"
+            echo
+            echo
+            
+            selected_kernel_drivers=$(grep '^[^#].* # available-kernel-drivers-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|# available-kernel-drivers-toggle$||")
+            
+            selected_kernel_drivers=$(sort <<< $selected_kernel_drivers | uniq)
+            
+            printf "Selected kernel drivers:\n${selected_kernel_drivers}"
+            echo
+            echo
+        else
+            echo "Unable to select available kernel modules and drivers"
+            echo
+        fi
         ;;
         
         *) echo "Unable to select best build mirror and latest profile kernel"
@@ -244,9 +254,6 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         echo
         ;;
 esac
-
-echo "Rerun this script after manual change of kernel version - for packaging available kernel modules and drivers"
-echo
 
 if [[ ${#1} -gt 1 ]]; then
     if [[ -w $desktop_packages_file ]]; then
@@ -293,10 +300,12 @@ if [[ ${#1} -gt 1 ]]; then
     fi
     
 else
-    echo "Present build - desktop packages and systemd services were not modified"
+    echo "Current build - desktop packages and systemd services were not modified"
     echo
 fi
 
+echo "Rerun this script after manual change of kernel version - for packaging available kernel modules and drivers"
+echo
 echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 echo
 echo 'Done.'
