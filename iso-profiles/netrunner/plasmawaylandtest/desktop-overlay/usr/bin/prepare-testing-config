@@ -119,6 +119,8 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
             echo
             sudo pacman -Sy
             echo
+            sudo pkgfile --update
+            echo
         else
             echo
             echo
@@ -291,7 +293,7 @@ if [[ ${#1} -gt 1 ]]; then
     fi
     
 else
-    echo "Normal build - desktop packages and systemd services were not modified"
+    echo "Present build - desktop packages and systemd services were not modified"
     echo
 fi
 
