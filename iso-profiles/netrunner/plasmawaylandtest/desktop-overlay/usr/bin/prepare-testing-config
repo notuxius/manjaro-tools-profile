@@ -146,6 +146,42 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 #             mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
 #         fi
 
+        if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+            echo "There is non-empty build profile folder in current user's home folder"
+            read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo
+                echo
+                date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
+                if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
+                    echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
+                    echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
+                    echo
+                else
+                    echo
+                    echo
+                fi
+                if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
+                    echo "Existing profile folder was removed from current user's home folder"
+                    echo
+                else
+                    echo
+                    echo
+                fi
+                
+                # echo "Downloading build profile folder into current user's home folder..."
+                eval $git_clone_profile
+                echo
+            else
+                echo
+                echo
+            fi
+        else
+            # echo "Downloading build profile folder into current user's home folder..."
+            eval $git_clone_profile
+            echo
+        fi
+
         echo "Looking for available kernel modules and drivers..."
         echo
         
@@ -196,42 +232,6 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         printf "Selected kernel drivers:\n${selected_kernel_drivers}"
         echo
         echo
-
-        if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
-            echo "There is non-empty build profile folder in current user's home folder"
-            read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                echo
-                echo
-                date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
-                if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
-                    echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
-                    echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
-                    echo
-                else
-                    echo
-                    echo
-                fi
-                if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
-                    echo "Existing profile folder was removed from current user's home folder"
-                    echo
-                else
-                    echo
-                    echo
-                fi
-                
-                # echo "Downloading build profile folder into current user's home folder..."
-                eval $git_clone_profile
-                echo
-            else
-                echo
-                echo
-            fi
-        else
-            # echo "Downloading build profile folder into current user's home folder..."
-            eval $git_clone_profile
-            echo
-        fi
         ;;
         
         *) echo "Unable to select best build mirror and latest profile kernel"
@@ -292,6 +292,8 @@ else
     echo
 fi
 
+echo "Rerun this script after manual change of kernel version in manjaro tools configuration file"
+echo
 echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 echo
 echo 'Done.'
