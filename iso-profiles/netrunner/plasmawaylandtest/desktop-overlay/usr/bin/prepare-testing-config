@@ -292,7 +292,7 @@ else
     echo
 fi
 
-echo "Rerun this script after manual change of kernel version in manjaro tools configuration file"
+echo "Rerun this script after manual change of kernel version - for packaging it's available modules and drivers"
 echo
 echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 echo
