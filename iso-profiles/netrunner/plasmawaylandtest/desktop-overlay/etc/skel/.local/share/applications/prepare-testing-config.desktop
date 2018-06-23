@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=/usr/bin/prepare-testing-config
+GenericName[en_US]=Prepare testing manjaro tools profile configuration
+GenericName=Prepare testing manjaro tools profile configuration
+Icon=bomber
+MimeType=
+Name[en_US]=Prepare testing manjaro tools profile configuration
+Name=Prepare testing manjaro tools profile configuration
+Path=
+StartupNotify=true
+Terminal=true
+TerminalOptions=\s--noclose
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

@@ -243,6 +243,9 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
         ;;
 esac
 
+echo "Rerun this script after manual change of kernel version - for packaging available kernel modules and drivers"
+echo
+
 if [[ ${#1} -gt 1 ]]; then
     if [[ -w $desktop_packages_file ]]; then
         opts='mcfu'
@@ -292,8 +295,6 @@ else
     echo
 fi
 
-echo "Rerun this script after manual change of kernel version - for packaging it's available modules and drivers"
-echo
 echo "Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 echo
 echo 'Done.'

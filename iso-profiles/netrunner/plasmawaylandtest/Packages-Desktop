@@ -108,10 +108,10 @@ steam-native-runtime  # minimal-packages-toggle
 ## Package management
 discover
 packagekit-qt5
-octopi
-octopi-notifier-frameworks
-octopi-cachecleaner
-octopi-repoeditor
+octopi  # minimal-packages-toggle
+octopi-notifier-frameworks  # minimal-packages-toggle
+octopi-cachecleaner  # minimal-packages-toggle
+octopi-repoeditor  # minimal-packages-toggle
 
 ## Printing
 cups  # minimal-packages-toggle
