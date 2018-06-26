@@ -119,7 +119,9 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
             echo
             sudo pacman -Sy
             echo
-            sudo pkgfile --update
+            if [[ -x $(which pkgfile) ]]; then
+                sudo pkgfile --update
+            fi
             echo
         else
             echo
