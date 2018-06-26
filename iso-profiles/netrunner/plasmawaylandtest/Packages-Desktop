@@ -108,10 +108,10 @@ steam-native-runtime  # minimal-packages-toggle
 ## Package management
 discover
 packagekit-qt5
-octopi  # minimal-packages-toggle
+octopi
 octopi-notifier-frameworks  # minimal-packages-toggle
-octopi-cachecleaner  # minimal-packages-toggle
-octopi-repoeditor  # minimal-packages-toggle
+octopi-cachecleaner
+octopi-repoeditor
 
 ## Printing
 cups  # minimal-packages-toggle
@@ -392,8 +392,8 @@ qtcurve-qt4
 qtcurve-utils
 qt5-quickcontrols2
 qt5-websockets
-qt5-webview  # Netrunner Command Center build package
-libmagick  # Netrunner Command Center build package
+qt5-webview  # Netrunner Command Center dependency
+imagemagick  # Netrunner Command Center dependency
 quota-tools
 # kross-interpreters
 wget
