@@ -59,6 +59,7 @@ perl
 procps-ng-classic
 psmisc
 reiserfsprogs
+rng-tools
 sed
 shadow
 spectre-meltdown-checker

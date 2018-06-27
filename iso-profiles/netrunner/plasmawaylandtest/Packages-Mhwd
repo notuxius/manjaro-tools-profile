@@ -1,6 +1,6 @@
 # KERNEL-bbswitch  # available-kernel-modules-toggle
 # KERNEL-broadcom-wl  # available-kernel-modules-toggle
-KERNEL-r8168  # available-kernel-modules-toggle
+# KERNEL-r8168  # available-kernel-modules-toggle
 # KERNEL-virtualbox-guest-modules  # available-kernel-modules-toggle
 # KERNEL-rt3562sta  # available-kernel-modules-toggle
 libva-intel-driver
@@ -16,8 +16,8 @@ mesa-vdpau
 >multilib lib32-primus
 # >nonfree_default KERNEL-catalyst  # available-kernel-modules-toggle
 # >nonfree_default catalyst-utils  # available-kernel-drivers-toggle
->nonfree_default KERNEL-nvidia  # available-kernel-modules-toggle
->nonfree_default nvidia-utils  # available-kernel-drivers-toggle
+# >nonfree_default KERNEL-nvidia  # available-kernel-modules-toggle
+# >nonfree_default nvidia-utils  # available-kernel-drivers-toggle
 # >nonfree_default KERNEL-nvidia-304xx  # available-kernel-modules-toggle
 # >nonfree_default KERNEL-nvidia-340xx  # available-kernel-modules-toggle
 # >nonfree_default KERNEL-nvidia-390xx  # available-kernel-modules-toggle
@@ -25,7 +25,7 @@ mesa-vdpau
 # >nonfree_default nvidia-340xx-utils  # available-kernel-drivers-toggle
 # >nonfree_default nvidia-390xx-utils  # available-kernel-drivers-toggle
 # >nonfree_multilib lib32-catalyst-utils  # available-kernel-drivers-toggle
->nonfree_multilib lib32-nvidia-utils  # available-kernel-drivers-toggle
+# >nonfree_multilib lib32-nvidia-utils  # available-kernel-drivers-toggle
 # >nonfree_multilib lib32-nvidia-304xx-utils  # available-kernel-drivers-toggle
 # >nonfree_multilib lib32-nvidia-340xx-utils  # available-kernel-drivers-toggle
 # >nonfree_multilib lib32-nvidia-390xx-utils  # available-kernel-drivers-toggle
