@@ -194,7 +194,7 @@ okular  # minimal-packages-toggle
 kdenetwork-filesharing  # minimal-packages-toggle
 kdenlive  # minimal-packages-toggle
 kde-servicemenus-rootactions
-khelpcenter  # minimal-packages-toggle
+khelpcenter
 kio-extras
 konsole
 konversation  # minimal-packages-toggle
@@ -303,8 +303,7 @@ vokoscreen
 # perl-uri  # dynamic playlist
 
 ## Optional dependencies for libreoffice
-jre8-openjdk  # minimal-packages-toggle
-jdk8-openjdk  # minimal-packages-toggle
+java-environment  # minimal-packages-toggle
 
 ## Documentation
 # manjaro-documentation
@@ -425,10 +424,8 @@ kdepim-meta  # minimal-packages-toggle
 # telepathy-morse
 
 ## Additional packages for testing
-# liquidshell
-artwork-sddm-breeze-new
 plasma-wayland-session
-qt5-virtualkeyboard               # minimal-packages-toggle
+qt5-virtualkeyboard
 plasma5-applets-redshift-control  # minimal-packages-toggle
 plasma-browser-integration        # minimal-packages-toggle
 plasma-vault
@@ -438,7 +435,7 @@ drkonqi
 pacmanlogviewer
 xorg-xhost
 ncdu
-grml-zsh-config
+grml-zsh-config                   # minimal-packages-toggle
 vim
 ufw
 krfb                              # minimal-packages-toggle
@@ -454,7 +451,6 @@ retext                            # minimal-packages-toggle
 kdevelop-pg-qt                    # minimal-packages-toggle
 kdevelop-python                   # minimal-packages-toggle
 atom                              # minimal-packages-toggle
-pycharm-community-edition         # minimal-packages-toggle
 qtcreator                         # minimal-packages-toggle
 kompare                           # minimal-packages-toggle
 latte-dock                        # minimal-packages-toggle
