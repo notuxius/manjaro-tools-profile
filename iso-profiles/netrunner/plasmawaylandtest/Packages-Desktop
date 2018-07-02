@@ -161,8 +161,8 @@ systemsettings
 user-manager
 
 ## Themes QT/GTK/SDDM
-breeze-netrunner
-breeze-kde4-netrunner
+breeze
+breeze-kde4
 breeze-gtk
 gnome-icon-theme
 oxygen
@@ -363,7 +363,7 @@ carbon-gtk3
 carbon-qt4
 carbon-qt5
 desktop-theme-breeze-alphablack
-desktop-theme-blackx
+# desktop-theme-blackx
 wallpapers-extra-pack-4  # minimal-packages-toggle
 
 ## Settings packages
