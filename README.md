@@ -2,7 +2,7 @@
 
 Manjaro tools profile used to create Netrunner Rolling Wayland/Xorg testing ISO images
 
-Unstable repositories - experimental kernel - for testing purposes only
+Unstable repositories - experimental kernel - development version of Calamares installer
 
 Default username: netrunner
 
