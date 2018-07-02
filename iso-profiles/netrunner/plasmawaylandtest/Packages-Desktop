@@ -402,7 +402,7 @@ flatzebra
 perl-glib-object-introspection
 ttf-ms-fonts
 kcm-about-extended
-kcm-plasma-services
+# kcm-plasma-services
 kcm-samba-mounter  # minimal-packages-toggle
 ocs-url
 plasma5-applets-simplemenu  # minimal-packages-toggle
