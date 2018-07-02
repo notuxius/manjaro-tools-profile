@@ -38,7 +38,7 @@ phonon-qt5-gstreamer
 pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-zeroconf
-# pavucontrol-qt
+pavucontrol-qt
 qt-gstreamer
 
 ## Connect Packages
@@ -108,7 +108,7 @@ steam-native-runtime  # minimal-packages-toggle
 ## Package management
 discover
 packagekit-qt5
-# octopi
+octopi
 octopi-notifier-frameworks  # minimal-packages-toggle
 octopi-cachecleaner
 octopi-repoeditor
@@ -261,13 +261,14 @@ python-pysmbc          # SMB browser support  # minimal-packages-toggle
 # cantata
 dmidecode  # for inxi -m output
 htop
-imagewriter
-# inkscape
+# imagewriter
+etcher
+inkscape  # minimal-packages-toggle
 inxi
 krita  # minimal-packages-toggle
 firefox  # minimal-packages-toggle
 falkon
-flashplugin
+flashplugin  # minimal-packages-toggle
 libreoffice-fresh  # minimal-packages-toggle
 # manjaro-hello
 manjaro-settings-manager-kcm
@@ -277,7 +278,7 @@ qbittorrent  # minimal-packages-toggle
 screenfetch
 systemd-kcm
 thunderbird  # minimal-packages-toggle
-vlc  # minimal-packages-toggle
+vlc
 yakuake
 audacious-gtk3  # minimal-packages-toggle
 audacious-plugins-gtk3  # minimal-packages-toggle
@@ -289,7 +290,7 @@ handbrake  # minimal-packages-toggle
 pidgin  # minimal-packages-toggle
 smplayer  # minimal-packages-toggle
 yarock-qt5  # minimal-packages-toggle
-mpv
+mpv  # minimal-packages-toggle
 # transmission-qt
 virtualbox
 virtualbox-guest-iso
@@ -424,9 +425,9 @@ kdepim-meta  # minimal-packages-toggle
 # telepathy-morse
 
 ## Additional packages for testing
+# liquidshell
 artwork-sddm-breeze-new
 plasma-wayland-session
-# liquidshell
 qt5-virtualkeyboard               # minimal-packages-toggle
 plasma5-applets-redshift-control  # minimal-packages-toggle
 plasma-browser-integration        # minimal-packages-toggle
@@ -439,7 +440,7 @@ xorg-xhost
 ncdu
 grml-zsh-config
 vim
-ufw                               # minimal-packages-toggle
+ufw
 krfb                              # minimal-packages-toggle
 krdc                              # minimal-packages-toggle
 kube                              # minimal-packages-toggle
@@ -449,7 +450,6 @@ ring-kde                          # minimal-packages-toggle
 ktorrent                          # minimal-packages-toggle
 chromium                          # minimal-packages-toggle
 kcron                             # minimal-packages-toggle
-kstars                            # minimal-packages-toggle
 retext                            # minimal-packages-toggle
 kdevelop-pg-qt                    # minimal-packages-toggle
 kdevelop-python                   # minimal-packages-toggle
@@ -460,6 +460,7 @@ kompare                           # minimal-packages-toggle
 latte-dock                        # minimal-packages-toggle
 krusader                          # minimal-packages-toggle
 kwave                             # minimal-packages-toggle
+ardour                            # minimal-packages-toggle
 audacity                          # minimal-packages-toggle
 elisa                             # minimal-packages-toggle
 calligra                          # minimal-packages-toggle
