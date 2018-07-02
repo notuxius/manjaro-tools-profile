@@ -285,6 +285,9 @@ if [[ -w $desktop_packages_file ]]; then
             sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
             sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
             sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || printf "$err_profile_text"
+            
+            sed -i "/^addgroups=/ s|,lp||" $profile_conf_file || printf "$err_profile_text"
+            sed -i "/^addgroups=/ s|,sys||" $profile_conf_file || printf "$err_profile_text"
             echo
             echo "$info_rerun_text"
             echo
@@ -301,6 +304,9 @@ if [[ -w $desktop_packages_file ]]; then
             sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
             sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
             sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
+            
+            sed -i "/lp/! s|\(^addgroups=.*[^\"]\)|\1,lp|" $profile_conf_file || printf "$err_profile_text"
+            sed -i "/sys/! s|\(^addgroups=.*[^\"]\)|\1,sys|" $profile_conf_file || printf "$err_profile_text"
             echo
             echo "$info_rerun_text"
             echo
