@@ -97,7 +97,7 @@ cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_bra
 
 # change profile distribution release to ...codename-year.month.day.hour... version format
 if [[ -r $lsb_release_file ]]; then
-    cat $target_conf_file | grep -q '# dist_release=' && sed -i "s|# dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file && printf "Changed profile distribution release to ...codename-year.month.day.hour... version format\n" || printf "Profile distribution release version $err_prepare_text"
+    cat $target_conf_file | grep -q 'dist_release=' && sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file && printf "Changed profile distribution release to ...codename-year.month.day.hour... version format\n" || printf "Profile distribution release version $err_prepare_text"
 fi
 
 echo
@@ -268,20 +268,23 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 esac
 
 err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
-err_desktop_packages_min_text="Desktop packages file is already set for minimal build - no modifications were made in it"
-err_desktop_packages_full_text="Desktop packages file is already set for full build - no modifications were made in it"
+err_desktop_packages_min_text="Desktop packages file is already set for minimal profile - no modifications were made in it"
+err_desktop_packages_full_text="Desktop packages file is already set for full profile - no modifications were made in it"
 info_rerun_text="Rerun this script after manual change of kernel version - for packaging available kernel modules and drivers"
 info_profile_command_text="Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 
 # using arguments fetched with 'getopts' command at the begging of the script
-if [[ -w $desktop_packages_file ]]; then
+if [[ -w $profile_conf_file ]]; then
+
     case "${arg}" in
         m|c) # comment/remove additional desktop packages and systemd services
             # change distribution release to ...codename-minimal-year.month.day.hour... version format
-            echo "Minimal build - without some additional desktop packages and systemd services"
+            echo "Minimal profile - without some additional desktop packages and systemd services"
             
-            cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
-            sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-minimal-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
+#             cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
+
+            sed -i 's|^#*extra="true"|extra="false"|' $profile_conf_file
+
             sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
             sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
             sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || printf "$err_profile_text"
@@ -297,10 +300,12 @@ if [[ -w $desktop_packages_file ]]; then
         
         f|u) # uncomment/include additional desktop packages and systemd services
             # change distribution release to ...codename-year.month.day.hour... version format
-            echo "Full build - with some additional desktop packages and systemd services"
+            echo "Full profile - with some additional desktop packages and systemd services"
     
-            cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
-            sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file || printf "$err_prepare_text"
+#             cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
+
+            sed -i 's|^#*extra="false"|extra="true"|' $profile_conf_file
+
             sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
             sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
             sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
@@ -316,21 +321,13 @@ if [[ -w $desktop_packages_file ]]; then
     esac
     
     if [[ -z ${@} ]]; then
-        echo "Current build - desktop packages and systemd services were not modified"
+        echo "Current profile - desktop packages and systemd services were not modified"
         echo
         echo "$info_rerun_text"
         echo
         echo "$info_profile_command_text"
         echo
     fi
-
-    # echo "Contents of desktop packages file after toggling comments:"
-    # cat $desktop_packages_file
-    
-else
-    echo "Cannot make modifications in desktop packages file"
-    echo
 fi
-
 echo 'Done.'
 exit 0
