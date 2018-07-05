@@ -9,7 +9,7 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-err_opt_text="Use -m/-c or -f/-u single option for desktop packages toggling. Exiting..."
+err_opt_text="Use '-m' or '-f' single option for minimal/full profile toggling. Exiting..."
 
 if [[ ${#1} -gt 2 ]]; then
     echo "$err_opt_text"
@@ -282,7 +282,7 @@ info_profile_command_text="Profile ISOs can be built with 'buildiso -p plasmaway
 if [[ -w $profile_conf_file ]]; then
 
     case "${arg}" in
-        m|c) # comment/remove additional desktop packages and systemd services
+        m) # comment/remove additional desktop packages and systemd services
             # change distribution release to ...codename-minimal-year.month.day.hour... version format
             echo "Minimal profile - without some additional desktop packages and systemd services"
             
@@ -303,7 +303,7 @@ if [[ -w $profile_conf_file ]]; then
 #             echo
             ;;
         
-        f|u) # uncomment/include additional desktop packages and systemd services
+        f) # uncomment/include additional desktop packages and systemd services
             # change distribution release to ...codename-year.month.day.hour... version format
             echo "Full profile - with some additional desktop packages and systemd services"
     
@@ -337,12 +337,12 @@ fi
 
 if [[ -r plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
     read -p "Build the preparated profile? " -n 1 -r
+    echo
+    echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo
-        echo
         buildiso -p plasmawaylandtest
     else
-        echo
+        echo "$info_profile_command_text"
         echo
     fi
 else
