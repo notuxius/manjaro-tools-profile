@@ -170,7 +170,7 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 #             mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
 #         fi
 
-        if [[ ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) && -w plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+        if [[ -w plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
             echo "There is non-empty build profile folder in current user's home folder"
             read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
             if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -299,8 +299,8 @@ if [[ -w $profile_conf_file ]]; then
             echo
             echo "$info_rerun_text"
             echo
-            echo "$info_profile_command_text"
-            echo
+#             echo "$info_profile_command_text"
+#             echo
             ;;
         
         f|u) # uncomment/include additional desktop packages and systemd services
@@ -320,8 +320,8 @@ if [[ -w $profile_conf_file ]]; then
             echo
             echo "$info_rerun_text"
             echo
-            echo "$info_profile_command_text"
-            echo
+#             echo "$info_profile_command_text"
+#             echo
             ;;
     esac
     
@@ -330,9 +330,25 @@ if [[ -w $profile_conf_file ]]; then
         echo
         echo "$info_rerun_text"
         echo
-        echo "$info_profile_command_text"
-        echo
+#         echo "$info_profile_command_text"
+#         echo
     fi
 fi
+
+if [[ -r plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
+    read -p "Build the preparated profile? " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
+        echo
+        buildiso -p plasmawaylandtest
+    else
+        echo
+        echo
+    fi
+else
+    echo
+    echo
+fi
+
 echo 'Done.'
 exit 0
