@@ -68,7 +68,7 @@ err_prepare_text="was not modified in current user's home manjaro tools configur
 # check if current current user's home config file already exists - and displays info and confirmation for overwriting it -
 # then copy system-wide manjaro tools config file into current current user's home directory for further modifications - 
 # current current user's home config file take precedence over the /etc system's one
-if [[ -w $target_conf_file ]]; then
+if [[ -r $source_conf_file && -w $target_conf_file ]]; then
     echo "There is existing manjaro tools configuration file in current user's home folder"
     read -p "Backup and overwrite existing manjaro tools configuration file? " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -89,14 +89,16 @@ else
     echo
 fi
 
-# change profile build repository to unstable
-cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file && printf "Changed profile build repository to unstable\n" || printf "Profile build repository $err_prepare_text"
+if [[ -r $target_conf_file && -w $target_conf_file ]]; then
+    # change profile build repository to unstable
+    cat $target_conf_file | grep -q '# target_branch=stable' && sed -i "s|# target_branch=stable|target_branch=unstable|" $target_conf_file && printf "Changed profile build repository to unstable\n" || printf "Profile build repository $err_prepare_text"
 
-# change profile ISO label from Manjaro to Netrunner Rolling Wayland
-cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file && printf "Changed profile ISO label from Manjaro to Netrunner Rolling Wayland\n" || printf "Profile ISO label $err_prepare_text"
+    # change profile ISO label from Manjaro to Netrunner Rolling Wayland
+    cat $target_conf_file | grep -q '# dist_branding="MJRO"' && sed -i 's|# dist_branding="MJRO"|dist_branding="NTRW"|' $target_conf_file && printf "Changed profile ISO label to Netrunner Rolling Wayland (NTRW)\n" || printf "Profile ISO label $err_prepare_text"
+fi
 
-# change profile distribution release to ...codename-year.month.day.hour... version format
-if [[ -r $lsb_release_file ]]; then
+if [[ -r $target_conf_file && -r $lsb_release_file ]]; then
+    # change profile distribution release to ...codename-year.month.day.hour... version format
     cat $target_conf_file | grep -q 'dist_release=' && sed -i "s|.*dist_release=.*|dist_release=\$(source ${lsb_release_file}; echo \${DISTRIB_CODENAME,,})-\$(date --utc +%Y.%-m.%-d.%-H)|" $target_conf_file && printf "Changed profile distribution release to ...codename-year.month.day.hour... version format\n" || printf "Profile distribution release version $err_prepare_text"
 fi
 
@@ -140,21 +142,24 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 
         # select best build mirror
         best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
-        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "Profile build mirror $err_prepare_text"
         
-        current_build_mirror=$(cat $target_conf_file | grep -E '^build_mirror=' | sed "s|build_mirror=||")
-        
-        echo "Current profile build mirror - ${current_build_mirror}"
-        echo
-        
-        # select latest non-realtime kernel available in unstable repo
-        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text"
-        
-        if cat $target_conf_file | grep -q '^# kernel'; then
-            current_kernel=$(sed -n "/^# kernel/ s|# kernel=||p" $target_conf_file)
-        else
-            current_kernel=$(sed -n "/^kernel/ s|kernel=||p" $target_conf_file)
+        if [[ -r $target_conf_file && -w $target_conf_file ]]; then
+            cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "Profile build mirror $err_prepare_text"
+            
+            current_build_mirror=$(cat $target_conf_file | grep -E '^build_mirror=' | sed "s|build_mirror=||")
+            
+            echo "Current profile build mirror - ${current_build_mirror}"
+            echo
+            
+            # select latest non-realtime kernel available in unstable repo
+            latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+            cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text"
+            
+            if cat $target_conf_file | grep -q '^# kernel'; then
+                current_kernel=$(sed -n "/^# kernel/ s|# kernel=||p" $target_conf_file)
+            else
+                current_kernel=$(sed -n "/^kernel/ s|kernel=||p" $target_conf_file)
+            fi
         fi
         
         echo "Current profile kernel - ${current_kernel}"
