@@ -1,18 +1,18 @@
 ## Network
 avahi
 networkmanager
-networkmanager-openconnect  # minimal-packages-toggle
+>extra networkmanager-openconnect  # minimal-packages-toggle
 networkmanager-openvpn
-networkmanager-pptp  # minimal-packages-toggle
-networkmanager-vpnc  # minimal-packages-toggle
+>extra networkmanager-pptp  # minimal-packages-toggle
+>extra networkmanager-vpnc  # minimal-packages-toggle
 # networkmanager-dispatcher-ntpd
-nss-mdns  # NSS support for mDNS (optdepend for avahi)  # minimal-packages-toggle
+>extra nss-mdns  # NSS support for mDNS (optdepend for avahi)  # minimal-packages-toggle
 ntp
 mobile-broadband-provider-info
 modemmanager
 openresolv
 openssh
-samba  # minimal-packages-toggle
+>extra samba  # minimal-packages-toggle
 usb_modeswitch
 # net-tools
 
@@ -30,7 +30,7 @@ libcanberra
 libcanberra-pulse
 >multilib lib32-libcanberra-pulse
 libcanberra-gstreamer
-libdvdcss  # minimal-packages-toggle
+>extra libdvdcss  # minimal-packages-toggle
 manjaro-alsa
 manjaro-pulse
 phonon-qt4-gstreamer
@@ -42,14 +42,14 @@ pavucontrol-qt
 qt-gstreamer
 
 ## Connect Packages
-android-tools  # minimal-packages-toggle
-android-udev  # minimal-packages-toggle
+>extra android-tools  # minimal-packages-toggle
+>extra android-udev  # minimal-packages-toggle
 gvfs
 gvfs-afc
 gvfs-gphoto2
 gvfs-mtp
 gvfs-nfs
-gvfs-smb  # minimal-packages-toggle
+>extra gvfs-smb  # minimal-packages-toggle
 kamera
 mtpfs
 udiskie
@@ -88,47 +88,47 @@ yay
 
 ## Fonts
 noto-fonts  # default font
-noto-fonts-cjk  # minimal-packages-toggle
-noto-fonts-emoji  # minimal-packages-toggle
+>extra noto-fonts-cjk  # minimal-packages-toggle
+>extra noto-fonts-emoji  # minimal-packages-toggle
 terminus-font
 ttf-bitstream-vera
 ttf-inconsolata
-ttf-indic-otf  # minimal-packages-toggle
+>extra ttf-indic-otf  # minimal-packages-toggle
 ttf-liberation
 ttf-droid
 
 ## Games
 # steam-manjaro
-knights  # minimal-packages-toggle
-ksudoku  # minimal-packages-toggle
-playonlinux  # minimal-packages-toggle
-steam  # minimal-packages-toggle
-steam-native-runtime  # minimal-packages-toggle
+>extra knights  # minimal-packages-toggle
+>extra ksudoku  # minimal-packages-toggle
+>extra playonlinux  # minimal-packages-toggle
+>extra steam  # minimal-packages-toggle
+>extra steam-native-runtime  # minimal-packages-toggle
 
 ## Package management
 discover
 packagekit-qt5
 octopi
-octopi-notifier-frameworks  # minimal-packages-toggle
+>extra octopi-notifier-frameworks  # minimal-packages-toggle
 octopi-cachecleaner
 octopi-repoeditor
 
 ## Printing
-cups  # minimal-packages-toggle
-cups-pdf  # minimal-packages-toggle
-cups-pk-helper  # minimal-packages-toggle
-ghostscript  # minimal-packages-toggle
-gsfonts  # minimal-packages-toggle
-gtk3-print-backends  # minimal-packages-toggle
-hplip  # minimal-packages-toggle
-splix  # minimal-packages-toggle
+>extra cups  # minimal-packages-toggle
+>extra cups-pdf  # minimal-packages-toggle
+>extra cups-pk-helper  # minimal-packages-toggle
+>extra ghostscript  # minimal-packages-toggle
+>extra gsfonts  # minimal-packages-toggle
+>extra gtk3-print-backends  # minimal-packages-toggle
+>extra hplip  # minimal-packages-toggle
+>extra splix  # minimal-packages-toggle
 
 ## Optional dependencies for hplip
-pyqt5-common  # minimal-packages-toggle
-python-pillow  # minimal-packages-toggle
-python-pip  # minimal-packages-toggle
-python-pyqt5  # minimal-packages-toggle
-python-reportlab  # minimal-packages-toggle
+>extra pyqt5-common  # minimal-packages-toggle
+>extra python-pillow  # minimal-packages-toggle
+>extra python-pip  # minimal-packages-toggle
+>extra python-pyqt5  # minimal-packages-toggle
+>extra python-reportlab  # minimal-packages-toggle
 
 ## Display manager
 sddm
@@ -140,7 +140,7 @@ kde-gtk-config
 kdeplasma-addons
 kgamma5
 kinfocenter
-kmenuedit  # minimal-packages-toggle
+>extra kmenuedit  # minimal-packages-toggle
 kscreen
 kscreenlocker
 ksshaskpass
@@ -180,41 +180,41 @@ libappindicator-sharp
 
 ## KDE Applications
 ark
-digikam  # minimal-packages-toggle
+>extra digikam  # minimal-packages-toggle
 dolphin
 dolphin-plugins
-filelight  # minimal-packages-toggle
+>extra filelight  # minimal-packages-toggle
 # k3b
 kate
-kcalc  # minimal-packages-toggle
-keditbookmarks  # minimal-packages-toggle
+>extra kcalc  # minimal-packages-toggle
+>extra keditbookmarks  # minimal-packages-toggle
 kfind
 kdeconnect
-okular  # minimal-packages-toggle
-kdenetwork-filesharing  # minimal-packages-toggle
-kdenlive  # minimal-packages-toggle
+>extra okular  # minimal-packages-toggle
+>extra kdenetwork-filesharing  # minimal-packages-toggle
+>extra kdenlive  # minimal-packages-toggle
 kde-servicemenus-rootactions
 khelpcenter
 kio-extras
 konsole
-konversation  # minimal-packages-toggle
+>extra konversation  # minimal-packages-toggle
 ksystemlog
 kwalletmanager
 # kwrite
 gwenview
 partitionmanager
-print-manager  # minimal-packages-toggle
-skanlite  # minimal-packages-toggle
+>extra print-manager  # minimal-packages-toggle
+>extra skanlite  # minimal-packages-toggle
 spectacle
 icoutils
-kamoso  # minimal-packages-toggle
-marble  # minimal-packages-toggle
+>extra kamoso  # minimal-packages-toggle
+>extra marble  # minimal-packages-toggle
 
 ## Optional dependencies for ark
 p7zip         # 7Z format support
 unrar         # RAR format support
 # unarchiver    # RAR format support
-zip           # ZIP packaging support in Krusader  # minimal-packages-toggle
+>extra zip           # ZIP packaging support in Krusader  # minimal-packages-toggle
 
 ## Optional dependency for digikam
 kipi-plugins  # export to various online services
@@ -226,8 +226,8 @@ ffmpegthumbs              # video thumbnails
 ruby                      # installing new service menus with GHNS
 
 ## Optional dependencies for gwenview
-kimageformats     # support for dds, xcf, exr, psd, and more image formats  # minimal-packages-toggle
-qt5-imageformats  # support for tiff, webp, and more image formats  # minimal-packages-toggle
+>extra kimageformats     # support for dds, xcf, exr, psd, and more image formats  # minimal-packages-toggle
+>extra qt5-imageformats  # support for tiff, webp, and more image formats  # minimal-packages-toggle
 
 ## Optional dependencies for k3b
 # cdparanoia    # for cd ripping support
@@ -238,7 +238,7 @@ qt5-imageformats  # support for tiff, webp, and more image formats  # minimal-pa
 # vcdimager     # for vcd burning support
 
 ## Optional dependencies for kaccounts-integration
-kaccounts-providers  # minimal-packages-toggle
+>extra kaccounts-providers  # minimal-packages-toggle
 
 ## Optional dependencies for kdeconnect
 sshfs  # remote filesystem browser
@@ -248,14 +248,14 @@ sshfs  # remote filesystem browser
 # dvdauthor        # for creation of DVD
 # dvgrab           # for firewire capture
 # recordmydesktop  # for screen capture
-movit            # for GPU video processing  # minimal-packages-toggle
+>extra movit            # for GPU video processing  # minimal-packages-toggle
 
 ## Optional dependencies for okular
-poppler-data  # encoding data to display PDF documents containing CJK characters  # minimal-packages-toggle
+>extra poppler-data  # encoding data to display PDF documents containing CJK characters  # minimal-packages-toggle
 
 ## Optional dependencies for print-manager
-system-config-printer  # auto-detect the printer driver  # minimal-packages-toggle
-python-pysmbc          # SMB browser support  # minimal-packages-toggle
+>extra system-config-printer  # auto-detect the printer driver  # minimal-packages-toggle
+>extra python-pysmbc          # SMB browser support  # minimal-packages-toggle
 
 ## Applications
 # cantata
@@ -263,34 +263,34 @@ dmidecode  # for inxi -m output
 htop
 # imagewriter
 etcher
-inkscape  # minimal-packages-toggle
+>extra inkscape  # minimal-packages-toggle
 inxi
-krita  # minimal-packages-toggle
-firefox  # minimal-packages-toggle
+>extra krita  # minimal-packages-toggle
+>extra firefox  # minimal-packages-toggle
 falkon
-flashplugin  # minimal-packages-toggle
-libreoffice-fresh  # minimal-packages-toggle
+>extra flashplugin  # minimal-packages-toggle
+>extra libreoffice-fresh  # minimal-packages-toggle
 # manjaro-hello
 manjaro-settings-manager-kcm
 manjaro-settings-manager-knotifier
 powertop
-qbittorrent  # minimal-packages-toggle
+>extra qbittorrent  # minimal-packages-toggle
 screenfetch
 systemd-kcm
-thunderbird  # minimal-packages-toggle
+>extra thunderbird  # minimal-packages-toggle
 vlc
 yakuake
-audacious-gtk3  # minimal-packages-toggle
-audacious-plugins-gtk3  # minimal-packages-toggle
-gimp  # minimal-packages-toggle
+>extra audacious-gtk3  # minimal-packages-toggle
+>extra audacious-plugins-gtk3  # minimal-packages-toggle
+>extra gimp  # minimal-packages-toggle
 # gmusicbrowser-filterfun
-google-talkplugin  # minimal-packages-toggle
+>extra google-talkplugin  # minimal-packages-toggle
 grub-customizer
-handbrake  # minimal-packages-toggle
-pidgin  # minimal-packages-toggle
-smplayer  # minimal-packages-toggle
-yarock-qt5  # minimal-packages-toggle
-mpv  # minimal-packages-toggle
+>extra handbrake  # minimal-packages-toggle
+>extra pidgin  # minimal-packages-toggle
+>extra smplayer  # minimal-packages-toggle
+>extra yarock-qt5  # minimal-packages-toggle
+>extra mpv  # minimal-packages-toggle
 # transmission-qt
 virtualbox
 virtualbox-guest-iso
@@ -303,7 +303,7 @@ vokoscreen
 # perl-uri  # dynamic playlist
 
 ## Optional dependencies for libreoffice
-java-environment  # minimal-packages-toggle
+>extra java-environment  # minimal-packages-toggle
 
 ## Documentation
 # manjaro-documentation
@@ -339,12 +339,12 @@ xdg-utils
 manjaro-hotfixes
 
 ## Flatpak support
-flatpak  # minimal-packages-toggle
-xdg-desktop-portal  # minimal-packages-toggle
-xdg-desktop-portal-kde  # minimal-packages-toggle
+>extra flatpak  # minimal-packages-toggle
+>extra xdg-desktop-portal  # minimal-packages-toggle
+>extra xdg-desktop-portal-kde  # minimal-packages-toggle
 
 ## Appimage support
-appimagelauncher  # minimal-packages-toggle
+>extra appimagelauncher  # minimal-packages-toggle
 
 ## Artwork packages
 # artwork-audacious
@@ -364,7 +364,7 @@ carbon-qt4
 carbon-qt5
 desktop-theme-breeze-alphablack
 # desktop-theme-blackx
-wallpapers-extra-pack-4  # minimal-packages-toggle
+>extra wallpapers-extra-pack-4  # minimal-packages-toggle
 
 ## Settings packages
 # default-settings-applications
@@ -403,17 +403,17 @@ perl-glib-object-introspection
 ttf-ms-fonts
 kcm-about-extended
 # kcm-plasma-services
-kcm-samba-mounter  # minimal-packages-toggle
+>extra kcm-samba-mounter  # minimal-packages-toggle
 ocs-url
-plasma5-applets-simplemenu  # minimal-packages-toggle
-plasma5-applets-volumewin7mixer  # minimal-packages-toggle
-icedtea-web  # minimal-packages-toggle
-skypeforlinux-stable-bin  # minimal-packages-toggle
+>extra plasma5-applets-simplemenu  # minimal-packages-toggle
+>extra plasma5-applets-volumewin7mixer  # minimal-packages-toggle
+>extra icedtea-web  # minimal-packages-toggle
+>extra skypeforlinux-stable-bin  # minimal-packages-toggle
 python-shiboken2  # Falkon additional package
 python-pyside2  # Falkon additional package
 
 ## KDE PIM
-kdepim-meta  # minimal-packages-toggle
+>extra kdepim-meta  # minimal-packages-toggle
 
 ## KDE Telepathy
 # telepathy-kde-meta
@@ -426,8 +426,8 @@ kdepim-meta  # minimal-packages-toggle
 ## Additional packages for testing
 plasma-wayland-session
 qt5-virtualkeyboard
-plasma5-applets-redshift-control  # minimal-packages-toggle
-plasma-browser-integration        # minimal-packages-toggle
+>extra plasma5-applets-redshift-control  # minimal-packages-toggle
+>extra plasma-browser-integration        # minimal-packages-toggle
 plasma-vault
 encfs
 cryfs
@@ -435,40 +435,40 @@ drkonqi
 pacmanlogviewer
 xorg-xhost
 ncdu
-grml-zsh-config                   # minimal-packages-toggle
+>extra grml-zsh-config                   # minimal-packages-toggle
 vim
 ufw
-krfb                              # minimal-packages-toggle
-krdc                              # minimal-packages-toggle
-kube                              # minimal-packages-toggle
-trojita                           # minimal-packages-toggle
-telegram-desktop                  # minimal-packages-toggle
-ring-kde                          # minimal-packages-toggle
-ktorrent                          # minimal-packages-toggle
-chromium                          # minimal-packages-toggle
-kcron                             # minimal-packages-toggle
-retext                            # minimal-packages-toggle
-kdevelop-pg-qt                    # minimal-packages-toggle
-kdevelop-python                   # minimal-packages-toggle
-atom                              # minimal-packages-toggle
-qtcreator                         # minimal-packages-toggle
-kompare                           # minimal-packages-toggle
-latte-dock                        # minimal-packages-toggle
-krusader                          # minimal-packages-toggle
-kwave                             # minimal-packages-toggle
-ardour                            # minimal-packages-toggle
-audacity                          # minimal-packages-toggle
-elisa                             # minimal-packages-toggle
-calligra                          # minimal-packages-toggle
-gnome-disk-utility                # minimal-packages-toggle
-kshutdown                         # minimal-packages-toggle
-krename                           # minimal-packages-toggle
-kolourpaint                       # minimal-packages-toggle
-blender                           # minimal-packages-toggle
-zanshin                           # minimal-packages-toggle
-dosbox                            # minimal-packages-toggle
-wine_gecko                        # minimal-packages-toggle
-wine-mono                         # minimal-packages-toggle
+>extra krfb                              # minimal-packages-toggle
+>extra krdc                              # minimal-packages-toggle
+>extra kube                              # minimal-packages-toggle
+>extra trojita                           # minimal-packages-toggle
+>extra telegram-desktop                  # minimal-packages-toggle
+>extra ring-kde                          # minimal-packages-toggle
+>extra ktorrent                          # minimal-packages-toggle
+>extra chromium                          # minimal-packages-toggle
+>extra kcron                             # minimal-packages-toggle
+>extra retext                            # minimal-packages-toggle
+>extra kdevelop-pg-qt                    # minimal-packages-toggle
+>extra kdevelop-python                   # minimal-packages-toggle
+>extra atom                              # minimal-packages-toggle
+>extra qtcreator                         # minimal-packages-toggle
+>extra kompare                           # minimal-packages-toggle
+>extra latte-dock                        # minimal-packages-toggle
+>extra krusader                          # minimal-packages-toggle
+>extra kwave                             # minimal-packages-toggle
+>extra ardour                            # minimal-packages-toggle
+>extra audacity                          # minimal-packages-toggle
+>extra elisa                             # minimal-packages-toggle
+>extra calligra                          # minimal-packages-toggle
+>extra gnome-disk-utility                # minimal-packages-toggle
+>extra kshutdown                         # minimal-packages-toggle
+>extra krename                           # minimal-packages-toggle
+>extra kolourpaint                       # minimal-packages-toggle
+>extra blender                           # minimal-packages-toggle
+>extra zanshin                           # minimal-packages-toggle
+>extra dosbox                            # minimal-packages-toggle
+>extra wine_gecko                        # minimal-packages-toggle
+>extra wine-mono                         # minimal-packages-toggle
 
 ## Additional packages for building ISOs
 manjaro-tools-base
