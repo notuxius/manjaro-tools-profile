@@ -1,7 +1,7 @@
 # Maintainer: Alexander Mentyu <notuxius@gmail.com>
 
 pkgname=prepare-testing-config-git
-pkgver=16cf217
+pkgver=3195ebf
 pkgrel=1
 pkgdesc="Prepare testing configuration for Netrunner Rolling Wayland profile"
 arch=('x86_64')
