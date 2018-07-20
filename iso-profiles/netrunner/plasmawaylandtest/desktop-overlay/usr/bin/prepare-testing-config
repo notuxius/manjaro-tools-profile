@@ -1,5 +1,24 @@
 #!/bin/bash
 
+## prepare-testing-config - Prepare Testing Configuration Script
+## Copyright (C) 2018 Alexander Mentyu <notuxius@gmail.com>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program. If not, see <http://www.gnu.org/licenses/>.
+##
+## The complete text of the GNU General Public License
+## can be found in /usr/share/common-licenses/GPL-3 file.
+
 # set -x
 
 echo
@@ -16,7 +35,7 @@ if [[ ${#1} -gt 2 ]]; then
     exit 1
 fi
 
-opts='mcfu'
+opts='mf'
 
 if [[ ${#1} -gt 1 ]]; then
     getopts "${opts}" arg
@@ -122,7 +141,7 @@ echo
 # check if internet is available
 echo "Checking internet connection availability..."
 case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-    [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git # 2> /dev/null)'
+    [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git' # 2> /dev/null)'
         read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo
@@ -350,5 +369,6 @@ else
     echo
 fi
 
-echo 'Done.'
+# read -s -p "Done. Press any key to exit" -n 1 -r
+# echo
 exit 0
