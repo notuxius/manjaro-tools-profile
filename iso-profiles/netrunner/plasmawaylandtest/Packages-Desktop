@@ -1,5 +1,5 @@
 ## Gnome integration
->extra gtk3-classic  # minimal-packages-toggle
+# gtk3-classic
 
 ## Network
 avahi
@@ -112,7 +112,7 @@ ttf-droid
 discover
 packagekit-qt5
 octopi
->extra octopi-notifier-frameworks  # minimal-packages-toggle
+# octopi-notifier-frameworks
 octopi-cachecleaner
 octopi-repoeditor
 
@@ -210,13 +210,13 @@ partitionmanager
 spectacle
 icoutils
 >extra kamoso  # minimal-packages-toggle
->extra marble  # minimal-packages-toggle
+# marble
 
 ## Optional dependencies for ark
 p7zip         # 7Z format support
 unrar         # RAR format support
-# unarchiver    # RAR format support
->extra zip           # ZIP packaging support in Krusader  # minimal-packages-toggle
+# unarchiver  # RAR format support
+>extra zip    # ZIP packaging support in Krusader  # minimal-packages-toggle
 
 ## Optional dependency for digikam
 kipi-plugins  # export to various online services
@@ -263,8 +263,8 @@ sshfs  # remote filesystem browser
 # cantata
 dmidecode  # for inxi -m output
 htop
-# imagewriter
-etcher
+imagewriter
+# etcher
 >extra inkscape  # minimal-packages-toggle
 inxi
 >extra krita  # minimal-packages-toggle
@@ -312,7 +312,7 @@ vokoscreen
 
 ## Settings packages
 # manjaro-kde-settings
-# >basic manjaro-kde-minimal-settings
+# manjaro-kde-minimal-settings
 # manjaro-browser-settings
 
 ## Xorg Input Drivers
@@ -409,7 +409,7 @@ kcm-about-extended
 >extra kcm-samba-mounter  # minimal-packages-toggle
 ocs-url
 >extra plasma5-applets-simplemenu  # minimal-packages-toggle
->extra plasma5-applets-volumewin7mixer  # minimal-packages-toggle
+#plasma5-applets-volumewin7mixer
 >extra icedtea-web  # minimal-packages-toggle
 >extra skypeforlinux-stable-bin  # minimal-packages-toggle
 python-shiboken2  # Falkon additional package
@@ -451,9 +451,10 @@ ufw
 >extra chromium                          # minimal-packages-toggle
 >extra kcron                             # minimal-packages-toggle
 >extra retext                            # minimal-packages-toggle
+>extra atom                              # minimal-packages-toggle
+>extra jedit                             # minimal-packages-toggle
 >extra kdevelop-pg-qt                    # minimal-packages-toggle
 >extra kdevelop-python                   # minimal-packages-toggle
->extra atom                              # minimal-packages-toggle
 >extra qtcreator                         # minimal-packages-toggle
 >extra kompare                           # minimal-packages-toggle
 >extra latte-dock                        # minimal-packages-toggle
@@ -463,6 +464,7 @@ ufw
 >extra audacity                          # minimal-packages-toggle
 >extra elisa                             # minimal-packages-toggle
 >extra calligra                          # minimal-packages-toggle
+>extra calligra-plan                     # minimal-packages-toggle
 >extra gnome-disk-utility                # minimal-packages-toggle
 >extra kshutdown                         # minimal-packages-toggle
 >extra krename                           # minimal-packages-toggle
