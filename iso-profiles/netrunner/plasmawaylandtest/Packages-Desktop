@@ -1,3 +1,6 @@
+## Gnome integration
+>extra gtk3-classic  # minimal-packages-toggle
+
 ## Network
 avahi
 networkmanager
@@ -119,7 +122,6 @@ octopi-repoeditor
 >extra cups-pk-helper  # minimal-packages-toggle
 >extra ghostscript  # minimal-packages-toggle
 >extra gsfonts  # minimal-packages-toggle
->extra gtk3-print-backends  # minimal-packages-toggle
 >extra hplip  # minimal-packages-toggle
 >extra splix  # minimal-packages-toggle
 
