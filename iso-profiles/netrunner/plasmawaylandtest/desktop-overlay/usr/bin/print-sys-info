@@ -17,7 +17,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
 ## The complete text of the GNU General Public License
-## can be found in /usr/share/common-licenses/GPL3 folder.
+## can be found in /usr/share/licenses/common/GPL3/ folder.
 
 echo 'Gathering system info and will open in default text editor...'
 
