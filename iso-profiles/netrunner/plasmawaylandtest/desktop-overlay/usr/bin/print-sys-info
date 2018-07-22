@@ -1,0 +1,104 @@
+#!/bin/bash
+
+## prepare-testing-config - Prepare Testing Configuration Script
+## Copyright (C) 2018 Alexander Mentyu <notuxius@gmail.com>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program. If not, see <http://www.gnu.org/licenses/>.
+##
+## The complete text of the GNU General Public License
+## can be found in /usr/share/common-licenses/GPL3 folder.
+
+echo 'Gathering system info and will open in default text editor...'
+
+cd ~
+
+lsb_release_file=$(eval echo /etc/lsb-release)
+sys_info_file=$(eval echo sys-info.txt)
+kwin_support_info_file=$(eval echo kwin-support-info.txt)
+kscreen_console_info_file=$(eval echo kscreen-console-info.txt)
+
+usage() {
+    echo "Usage: ${0##*/} [options]"
+    echo "    -w                 Display KWin Support Information"
+    echo "    -s                 Display KScreen Console output"
+    echo '    -h                 This help'
+    exit $1
+}
+
+opts='ws'
+
+if [[ ${#1} -gt 3 ]]; then
+    echo "two arguments max"
+    usage 1
+fi
+
+if [[ ${#1} -gt 1 ]]; then
+    while getopts "${opts}" arg; do
+
+        if [[ $arg == "?" ]]; then
+            usage 1
+        fi
+        
+        case "${arg}" in
+            w) > ${kwin_support_info_file}
+            qdbus org.kde.KWin /KWin supportInformation | sed "2,8d" >> ${kwin_support_info_file}
+            xdg-open ${kwin_support_info_file}
+            ;;
+            s) > ${kscreen_console_info_file}
+            kscreen-console bug >> ${kscreen_console_info_file}
+            xdg-open ${kscreen_console_info_file}
+            ;;
+            h) usage 0
+            ;;
+        esac
+    done
+
+shift $(($OPTIND - 1))
+fi
+
+> ${sys_info_file}
+
+printf 'Distribution: ' >> ${sys_info_file}
+sed -n '/^DISTRIB_DESCRIPTION/ s|DISTRIB_DESCRIPTION=||; s|"||gp' $lsb_release_file >> ${sys_info_file}
+
+printf 'Kernel: ' >> ${sys_info_file}
+uname -r >> ${sys_info_file}
+
+printf 'Plasma: ' >> ${sys_info_file}
+plasmashell --version | awk '{print $2}' >> ${sys_info_file}
+# qmake --version | awk 'FNR==2 {print $0}' | sed 's|Using ||; s| in /usr/lib||' >> ${sys_info_file}
+
+printf 'Apps: ' >> ${sys_info_file}
+dolphin --version | awk '{print $2}' >> ${sys_info_file}
+
+kf5-config --version | awk 'FNR<3' | sed 's|KDE ||' >> ${sys_info_file}
+# pacman -Q qt5-base >> ${sys_info_file}
+# pacman -Q plasma-desktop >> ${sys_info_file}
+
+# printf 'Mesa: ' >> ${sys_info_file}
+# pacman -Q mesa | awk '{print $2}' >> ${sys_info_file}
+
+printf 'Wayland: ' >> ${sys_info_file}
+pacman -Q wayland | awk '{print $2}' | sed "s|-.*||" >> ${sys_info_file}
+
+# inxi -Gxx >> ${sys_info_file}
+inxi -Gxx | sed "s|driver:|\n           driver:|; s|v: \([0-9]\)|\n           v:\1|;" >> ${sys_info_file}
+
+# tr -dc "[:print:]\n" < ${sys_info_file} | paste -s -d ' '  s|           chip ID:|chip ID:|
+
+# pacman -Q wayland-protocols | awk '{print $2}' | sed "s|-.*||" >> ${sys_info_file}
+
+# "${EDITOR:-kate}" ${sys_info_file}
+xdg-open ${sys_info_file}
+exit 0

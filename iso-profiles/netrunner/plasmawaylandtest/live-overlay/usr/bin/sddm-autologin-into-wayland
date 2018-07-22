@@ -17,7 +17,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
 ## The complete text of the GNU General Public License
-## can be found in /usr/share/common-licenses/GPL-3 file.
+## can be found in /usr/share/common-licenses/GPL3 folder.
 
 # TODO add checking of sed success completion
 # https://unix.stackexchange.com/questions/88123/why-sed-does-not-return-exit-status-if-regex-does-not-matched?rq=1
