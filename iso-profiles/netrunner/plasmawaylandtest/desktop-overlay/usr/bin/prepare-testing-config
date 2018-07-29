@@ -307,7 +307,7 @@ if [[ -w $profile_conf_file ]]; then
             
 #             cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
 
-            sed -i 's|^#*extra="true"|extra="false"|' $profile_conf_file
+            sed -i 's|^.*extra=.*"|extra="false"|' $profile_conf_file
 
             sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
             sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
@@ -328,7 +328,7 @@ if [[ -w $profile_conf_file ]]; then
     
 #             cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
 
-            sed -i 's|^#*extra="false"|extra="true"|' $profile_conf_file
+            sed -i 's|^.*extra=.*"|extra="true"|' $profile_conf_file
 
             sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
             sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
