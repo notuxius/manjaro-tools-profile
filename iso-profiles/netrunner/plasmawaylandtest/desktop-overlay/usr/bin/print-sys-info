@@ -92,8 +92,10 @@ kf5-config --version | awk 'FNR<3' | sed 's|KDE ||' >> ${sys_info_file}
 printf 'Wayland: ' >> ${sys_info_file}
 pacman -Q wayland | awk '{print $2}' | sed "s|-.*||" >> ${sys_info_file}
 
+stty cols 100
+
 # inxi -Gxx >> ${sys_info_file}
-inxi -Gxx | sed "s|driver:|\n           driver:|; s|v: \([0-9]\)|\n           v:\1|;" >> ${sys_info_file}
+inxi -Gxx | sed "s|driver:|\n           driver:|; s|v: \([0-9]\)|\n           v:\1|" >> ${sys_info_file}
 
 # tr -dc "[:print:]\n" < ${sys_info_file} | paste -s -d ' '  s|           chip ID:|chip ID:|
 
