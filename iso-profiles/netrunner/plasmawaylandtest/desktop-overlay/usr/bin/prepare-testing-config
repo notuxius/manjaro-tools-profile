@@ -28,6 +28,13 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
+lsb_release_file=$(eval echo /etc/lsb-release)
+
+if ! grep -q 'Netrunner Rolling' ${lsb_release_file}; then
+    echo "This script must not be run on Netrunner Rolling. Exiting..."
+    exit 1
+fi
+
 err_opt_text="Use '-m' or '-f' single option for minimal/full profile toggling. Exiting..."
 
 if [[ ${#1} -gt 2 ]]; then
@@ -54,26 +61,34 @@ if [[ $(printf '%.*f' 0 $disk_free_space) -lt 30 ]]; then
     echo
 fi
 
-cd ${HOME}
+cd ~
 
 # create if not exists manjaro tools folder in current current user's home directory
 mkdir -p $(eval echo .config/manjaro-tools/)
 
 # check if manjaro tools config file exists
-if [[ -r $(eval echo /etc/manjaro-tools/manjaro-tools.conf) ]]; then
+source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
+target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
+
+if [[ -r ${source_conf_file} ]]; then
     echo "System-wide manjaro tools configuration found"
     echo
-    source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
-    target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
     # target_backup_conf_dir=$(eval echo .config/manjaro-tools/manjaro-tools-conf-backups/)
     profile_conf_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/profile.conf)
-    lsb_release_file=$(eval echo /etc/lsb-release)
     # os_release_file=$(eval echo /usr/lib/os-release)
 else
     echo "System-wide manjaro tools configuration not found"
-    echo "Manjaro tools are required for building profile ISOs"
-    printf "It can be obtained by installing next packages:\nmanjaro-tools-base\nmanjaro-tools-iso\nmanjaro-tools-pkg\nmanjaro-tools-yaml\nExiting..."
-    exit 1
+    read -p "Manjaro tools are required for building profile ISOs. Install them? " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
+        echo
+        sudo pacman -S manjaro-tools-base manjaro-tools-iso --noconfirm
+        echo
+    else
+        echo
+        echo "Cannot proceed without manjaro-tools packages. Exiting..."
+        exit 1
+    fi
 fi
 
 # toggling of minimal desktop packages
@@ -150,9 +165,7 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
             echo
             sudo pacman -Sy
             echo
-            if [[ -x $(which pkgfile) ]]; then
-                sudo pkgfile --update
-            fi
+            sudo pacman -Fy
             echo
         else
             echo
@@ -294,7 +307,7 @@ esac
 err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
 err_desktop_packages_min_text="Desktop packages file is already set for minimal profile - no modifications were made in it"
 err_desktop_packages_full_text="Desktop packages file is already set for full profile - no modifications were made in it"
-info_rerun_text="Rerun this script after manual change of kernel version - for packaging available kernel modules and drivers"
+info_rerun_text="Rerun this script after manual change of kernel version for packaging available kernel modules and drivers"
 info_profile_command_text="Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 
 # using arguments fetched with 'getopts' command at the begging of the script
