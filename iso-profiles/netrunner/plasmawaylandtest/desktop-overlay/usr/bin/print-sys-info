@@ -27,19 +27,21 @@ lsb_release_file=$(eval echo /etc/lsb-release)
 sys_info_file=$(eval echo sys-info.txt)
 kwin_support_info_file=$(eval echo kwin-support-info.txt)
 kscreen_console_info_file=$(eval echo kscreen-console-info.txt)
+glxinfo_info_file=$(eval echo glxinfo-info.txt)
 
 usage() {
     echo "Usage: ${0##*/} [options]"
-    echo "    -w                 Display KWin Support Information"
-    echo "    -s                 Display KScreen Console output"
+    echo "    -w                 Display KWin support information"
+    echo "    -s                 Display KScreen console information"
+    echo "    -x                 Display GLX information"
     echo '    -h                 This help'
     exit $1
 }
 
-opts='ws'
+opts='wsx'
 
-if [[ ${#1} -gt 3 ]]; then
-    echo "two arguments max"
+if [[ ${#1} -gt 4 ]]; then
+    echo "three arguments max"
     usage 1
 fi
 
@@ -58,6 +60,10 @@ if [[ ${#1} -gt 1 ]]; then
             s) > ${kscreen_console_info_file}
             kscreen-console bug >> ${kscreen_console_info_file}
             xdg-open ${kscreen_console_info_file}
+            ;;
+            x) > ${glxinfo_info_file}
+            glxinfo > ${glxinfo_info_file}
+            xdg-open ${glxinfo_info_file}
             ;;
             h) usage 0
             ;;
@@ -94,8 +100,7 @@ pacman -Q wayland | awk '{print $2}' | sed "s|-.*||" >> ${sys_info_file}
 
 stty cols 100
 
-# inxi -Gxx >> ${sys_info_file}
-inxi -Gxx | sed "s|driver:|\n           driver:|; s|v: \([0-9]\)|\n           v:\1|" >> ${sys_info_file}
+inxi -Gxx >> ${sys_info_file}
 
 # tr -dc "[:print:]\n" < ${sys_info_file} | paste -s -d ' '  s|           chip ID:|chip ID:|
 
