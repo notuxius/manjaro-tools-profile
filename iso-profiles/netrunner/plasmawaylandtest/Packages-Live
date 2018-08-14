@@ -2,7 +2,7 @@ calamares-git
 # calamares
 # KERNEL-bbswitch  # available-kernel-modules-toggle
 # KERNEL-broadcom-wl  # available-kernel-modules-toggle
-KERNEL-r8168  # available-kernel-modules-toggle
+# KERNEL-r8168  # available-kernel-modules-toggle
 # KERNEL-rt3562sta  # available-kernel-modules-toggle
 manjaro-live-skel
 mkinitcpio-nfs-utils
