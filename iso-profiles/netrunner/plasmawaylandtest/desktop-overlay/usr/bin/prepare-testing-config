@@ -82,7 +82,7 @@ else
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo
         echo
-        sudo pacman -S manjaro-tools-base manjaro-tools-iso --noconfirm
+        sudo pacman -S manjaro-tools-base manjaro-tools-iso manjaro-tools-pkg manjaro-tools-yaml --noconfirm
         echo
     else
         echo
