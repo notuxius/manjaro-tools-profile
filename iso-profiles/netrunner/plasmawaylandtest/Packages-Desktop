@@ -268,7 +268,7 @@ imagewriter
 >extra inkscape  # minimal-packages-toggle
 inxi
 >extra krita  # minimal-packages-toggle
->extra firefox  # minimal-packages-toggle
+>extra firefox-kde-opensuse  # minimal-packages-toggle
 falkon
 >extra flashplugin  # minimal-packages-toggle
 >extra libreoffice-fresh  # minimal-packages-toggle
