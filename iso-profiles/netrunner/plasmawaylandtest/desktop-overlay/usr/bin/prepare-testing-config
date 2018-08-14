@@ -70,7 +70,7 @@ mkdir -p $(eval echo .config/manjaro-tools/)
 source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
 target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
 
-if [[ -x $(which buildiso1 2> /dev/null) ]]; then
+if [[ -x $(which buildiso 2> /dev/null) ]]; then
     # target_backup_conf_dir=$(eval echo .config/manjaro-tools/manjaro-tools-conf-backups/)
     profile_conf_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/profile.conf)
     # os_release_file=$(eval echo /usr/lib/os-release)
