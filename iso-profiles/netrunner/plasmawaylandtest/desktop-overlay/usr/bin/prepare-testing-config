@@ -70,15 +70,14 @@ mkdir -p $(eval echo .config/manjaro-tools/)
 source_conf_file=$(eval echo /etc/manjaro-tools/manjaro-tools.conf)
 target_conf_file=$(eval echo .config/manjaro-tools/manjaro-tools.conf)
 
-if [[ -r ${source_conf_file} ]]; then
-    echo "System-wide manjaro tools configuration found"
-    echo
+if [[ -x $(which buildiso1 2> /dev/null) ]]; then
     # target_backup_conf_dir=$(eval echo .config/manjaro-tools/manjaro-tools-conf-backups/)
     profile_conf_file=$(eval echo plasma-wayland-testing-manjaro-tools-profile/iso-profiles/netrunner/plasmawaylandtest/profile.conf)
     # os_release_file=$(eval echo /usr/lib/os-release)
 else
-    echo "System-wide manjaro tools configuration not found"
-    read -p "Manjaro tools are required for building profile ISOs. Install them? " -n 1 -r
+    echo "Manjaro tools buildiso command not found"
+    echo "The buildiso command is required for building profile ISOs"
+    read -p "Install needed all and additional packages? " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo
         echo
@@ -86,7 +85,7 @@ else
         echo
     else
         echo
-        echo "Cannot proceed without manjaro-tools packages. Exiting..."
+        echo "Cannot proceed without required Manjaro tools packages. Exiting..."
         exit 1
     fi
 fi
