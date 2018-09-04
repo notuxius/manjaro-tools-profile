@@ -36,7 +36,6 @@ libcanberra-gstreamer
 >extra libdvdcss  # minimal-packages-toggle
 manjaro-alsa
 manjaro-pulse
-phonon-qt4-gstreamer
 phonon-qt5-gstreamer
 pulseaudio-bluetooth
 pulseaudio-ctl
@@ -363,7 +362,6 @@ artwork-whiteclassicia-cursor
 adapta-kde
 carbon-gtk2
 carbon-gtk3
-carbon-qt4
 carbon-qt5
 desktop-theme-breeze-alphablack
 # desktop-theme-blackx
