@@ -35,23 +35,46 @@ if ! grep -q 'Netrunner Rolling' ${lsb_release_file}; then
     exit 1
 fi
 
-err_opt_text="Use '-m' or '-f' single option for minimal/full profile toggling. Exiting..."
+err_opt_text="Use '-m', '-f' or '-d' options for toggling of minimal/full profile and it's redownloading. Exiting...
 
-if [[ ${#1} -gt 2 ]]; then
+For example:
+prepare-testing-config -m use minimal profile for build,
+prepare-testing-config -f use full profile for build,
+prepare-testing-config -md use minimal profile for build, backup, remove and redownload existing profile,
+prepare-testing-config -fd use full profile for build, backup, remove and redownload existing profile"
+             
+if [[ ${#1} -gt 3 || ${#1} -lt 2 ]]; then
     echo "$err_opt_text"
     exit 1
 fi
 
-opts='mf'
+opts='mfd'
 
-if [[ ${#1} -gt 1 ]]; then
-    getopts "${opts}" arg
+correct_profile=false
 
-    if [[ $arg == "?" ]]; then
+while getopts "${opts}" arg; do
+
+    if [[ ${arg} == "?" ]]; then
         echo "$err_opt_text"
         exit 1
     fi
-fi
+    
+    case ${arg} in
+        m)
+            correct_profile=true
+            ;;
+        
+        f)
+            correct_profile=true
+    esac
+    
+    if [[ ! "$correct_profile" = true ]]; then
+        echo "$err_opt_text"
+        exit 1
+    fi
+    
+done
+# shift $((OPTIND-1))
 
 # check free space in and display warning 
 disk_free_space=$(df -h / | tail -1 | awk '{print $4}' | sed s/G//)
@@ -201,38 +224,9 @@ case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).
 #             mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
 #         fi
 
-        if [[ -w plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
-            echo "There is non-empty build profile folder in current user's home folder"
-            read -p "Backup, remove and redownload existing profile folder? " -n 1 -r
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                echo
-                echo
-                date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
-                if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
-                    echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
-                    echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
-                    echo
-                else
-                    echo
-                    echo
-                fi
-                if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
-                    echo "Existing profile folder was removed from current user's home folder"
-                    echo
-                else
-                    echo
-                    echo
-                fi
-                
-                # echo "Downloading build profile folder into current user's home folder..."
-                eval $git_clone_profile
-                echo
-            else
-                echo
-                echo
-            fi
-        else
-            # echo "Downloading build profile folder into current user's home folder..."
+
+        # echo "Downloading build profile folder into current user's home folder..."
+        if [[ ! -d plasma-wayland-testing-manjaro-tools-profile/ ]]; then
             eval $git_clone_profile
             echo
         fi
@@ -309,62 +303,100 @@ err_desktop_packages_full_text="Desktop packages file is already set for full pr
 info_rerun_text="Rerun this script after manual change of kernel version for packaging available kernel modules and drivers"
 info_profile_command_text="Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command"
 
-# using arguments fetched with 'getopts' command at the begging of the script
-if [[ -w $profile_conf_file ]]; then
+OPTIND=1
 
-    case "${arg}" in
-        m) # comment/remove additional desktop packages and systemd services
-            # change distribution release to ...codename-minimal-year.month.day.hour... version format
-            echo "Minimal profile - without some additional desktop packages and systemd services"
+while getopts "${opts}" arg; do
+
+    if [[ -w $profile_conf_file ]]; then
+    
+
+
+        case "${arg}" in
+            m)
+                # comment/remove additional desktop packages and systemd services
+                # change distribution release to ...codename-minimal-year.month.day.hour... version format
+                echo "Minimal profile - without some additional desktop packages and systemd services"
+                echo
+    #             cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
+
+                sed -i 's|^.*extra=.*"|extra="false"|' $profile_conf_file
+
+                sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
+                sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
+                sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || printf "$err_profile_text"
+                
+                sed -i "/^addgroups=/ s|,lp||" $profile_conf_file || printf "$err_profile_text"
+                sed -i "/^addgroups=/ s|,sys||" $profile_conf_file || printf "$err_profile_text"
+                echo "$info_rerun_text"
+                echo
+    #             echo "$info_profile_command_text"
+    #             echo
+                ;;
             
-#             cat $desktop_packages_file | grep -q '^[^# ].*# minimal-packages-toggle$' && sed -i 's|^\([^# ].*\)# minimal-packages-toggle$|# \1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_min_text"
-
-            sed -i 's|^.*extra=.*"|extra="false"|' $profile_conf_file
-
-            sed -i "/^# minimal-services-toggle/! s| 'org.cups.cupsd'||" $profile_conf_file || printf "$err_profile_text" 
-            sed -i "/^# minimal-services-toggle/! s| 'smbd'||" $profile_conf_file || printf "$err_profile_text" 
-            sed -i "/^# minimal-services-toggle/! s| 'nmbd'||" $profile_conf_file || printf "$err_profile_text"
-            
-            sed -i "/^addgroups=/ s|,lp||" $profile_conf_file || printf "$err_profile_text"
-            sed -i "/^addgroups=/ s|,sys||" $profile_conf_file || printf "$err_profile_text"
-            echo
-            echo "$info_rerun_text"
-            echo
-#             echo "$info_profile_command_text"
-#             echo
-            ;;
+            f)
+                # uncomment/include additional desktop packages and systemd services
+                # change distribution release to ...codename-year.month.day.hour... version format
+                echo "Full profile - with some additional desktop packages and systemd services"
+                echo
+                ;;
+                
+            d)
+                if [[ -w plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
+                        date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
+                        if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
+                            echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
+                            echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
+                            echo
+                        else
+                            echo
+                            echo
+                        fi
+                        if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
+                            echo "Existing profile folder was removed from current user's home folder, will redownload..."
+                            echo
+                        else
+                            echo
+                            echo
+                        fi
+                        
+                        # echo "Downloading build profile folder into current user's home folder..."
+                        eval $git_clone_profile
+                        echo
+                else
+                    echo
+                    echo
+                fi
+                
         
-        f) # uncomment/include additional desktop packages and systemd services
-            # change distribution release to ...codename-year.month.day.hour... version format
-            echo "Full profile - with some additional desktop packages and systemd services"
-    
-#             cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
+    #             cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
 
-            sed -i 's|^.*extra=.*"|extra="true"|' $profile_conf_file
+                sed -i 's|^.*extra=.*"|extra="true"|' $profile_conf_file
 
-            sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
-            sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
-            sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
-            
-            sed -i "/lp/! s|\(^addgroups=.*[^\"]\)|\1,lp|" $profile_conf_file || printf "$err_profile_text"
-            sed -i "/sys/! s|\(^addgroups=.*[^\"]\)|\1,sys|" $profile_conf_file || printf "$err_profile_text"
+                sed -i "/org.cups.cupsd/! s|\(^enable_systemd=.*[^)]\)|\1 'org.cups.cupsd'|" $profile_conf_file || printf "$err_profile_text"
+                sed -i "/smbd/! s|\(^enable_systemd=.*[^)]\)|\1 'smbd'|" $profile_conf_file || printf "$err_profile_text"
+                sed -i "/nmbd/! s|\(^enable_systemd=.*[^)]\)|\1 'nmbd'|" $profile_conf_file || printf "$err_profile_text"
+                
+                sed -i "/lp/! s|\(^addgroups=.*[^\"]\)|\1,lp|" $profile_conf_file || printf "$err_profile_text"
+                sed -i "/sys/! s|\(^addgroups=.*[^\"]\)|\1,sys|" $profile_conf_file || printf "$err_profile_text"
+                echo "$info_rerun_text"
+                echo
+    #             echo "$info_profile_command_text"
+    #             echo
+                ;;
+        esac
+        
+        if [[ -z ${@} ]]; then
+            echo "Current profile - desktop packages and systemd services were not modified"
             echo
             echo "$info_rerun_text"
             echo
-#             echo "$info_profile_command_text"
-#             echo
-            ;;
-    esac
-    
-    if [[ -z ${@} ]]; then
-        echo "Current profile - desktop packages and systemd services were not modified"
-        echo
-        echo "$info_rerun_text"
-        echo
-#         echo "$info_profile_command_text"
-#         echo
+    #         echo "$info_profile_command_text"
+    #         echo
+        fi
     fi
-fi
+
+done
+shift $((OPTIND-1))
 
 if [[ -r plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
     read -p "Build the preparated profile? " -n 1 -r
