@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## prepare-testing-config - Prepare Testing Configuration Script
+## print-sys-info - Print System Information Script
 ## Copyright (C) 2018 Alexander Mentyu <notuxius@gmail.com>
 ##
 ## This program is free software: you can redistribute it and/or modify
@@ -55,15 +55,15 @@ if [[ ${#1} -gt 1 ]]; then
         case "${arg}" in
             w) > ${kwin_support_info_file}
             qdbus org.kde.KWin /KWin supportInformation | sed "2,8d" >> ${kwin_support_info_file}
-            xdg-open ${kwin_support_info_file}
+            kate ${kwin_support_info_file}
             ;;
             s) > ${kscreen_console_info_file}
             kscreen-console bug >> ${kscreen_console_info_file}
-            xdg-open ${kscreen_console_info_file}
+            kate ${kscreen_console_info_file}
             ;;
             x) > ${glxinfo_info_file}
             glxinfo > ${glxinfo_info_file}
-            xdg-open ${glxinfo_info_file}
+            kate ${glxinfo_info_file}
             ;;
             h) usage 0
             ;;
@@ -107,5 +107,5 @@ inxi -Gxx >> ${sys_info_file}
 # pacman -Q wayland-protocols | awk '{print $2}' | sed "s|-.*||" >> ${sys_info_file}
 
 # "${EDITOR:-kate}" ${sys_info_file}
-xdg-open ${sys_info_file}
+kate ${sys_info_file}
 exit 0
