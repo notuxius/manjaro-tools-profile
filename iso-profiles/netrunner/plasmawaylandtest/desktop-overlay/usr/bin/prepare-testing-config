@@ -35,46 +35,65 @@ if ! grep -q 'Netrunner Rolling' ${lsb_release_file}; then
     exit 1
 fi
 
-err_opt_text="Use '-m', '-f' or '-d' options for toggling of minimal/full profile and it's redownloading. Exiting...
+err_opt_text="Use '-m' or '-f' option for toggling of minimal or full profile building.
+If no option is specified - currently set profile will be build.
 
 For example:
+prepare-testing-config    use current profile for build,
 prepare-testing-config -m use minimal profile for build,
-prepare-testing-config -f use full profile for build,
-prepare-testing-config -md use minimal profile for build, backup, remove and redownload existing profile,
-prepare-testing-config -fd use full profile for build, backup, remove and redownload existing profile"
-             
-if [[ ${#1} -gt 3 || ${#1} -lt 2 ]]; then
+prepare-testing-config -f use full profile for build.
+
+Exiting..."
+
+if [[ ${#1} -gt 2 ]]; then
     echo "$err_opt_text"
     exit 1
 fi
 
-opts='mfd'
+if [[ ! (( "${@}" == "-m" || "${@}" == "-f" || "${@}" == "" )) ]]; then
+    echo "$err_opt_text"
+    exit 1
+fi
 
-correct_profile=false
+# opts='mfd'
 
-while getopts "${opts}" arg; do
+# correct_profile=false
 
-    if [[ ${arg} == "?" ]]; then
-        echo "$err_opt_text"
-        exit 1
-    fi
+# while getopt "${opts}" arg; do
+# 
+#     if [[ ${arg} == "?" ]]; then
+#         echo "$err_opt_text"
+#         exit 1
+#     fi
     
-    case ${arg} in
-        m)
-            correct_profile=true
-            ;;
-        
-        f)
-            correct_profile=true
-    esac
+#     case ${arg} in
+#         m)
+#             correct_profile=true
+#             ;;
+#         
+#         f)
+#             correct_profile=true
+#     esac
     
-    if [[ ! "$correct_profile" = true ]]; then
-        echo "$err_opt_text"
-        exit 1
-    fi
+#     if [[ ! "$correct_profile" = true ]]; then
+#         echo "$err_opt_text"
+#         exit 1
+#     fi
     
-done
+# done
 # shift $((OPTIND-1))
+
+printf "Checking internet connection availability...\n"
+case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+    [23])
+        internet_avail=true
+        printf "Internet is available\n\n"
+        ;;
+    *)
+        internet_avail=false
+        printf "Internet is not available. Cannot build profile while offline. Exiting...\n"
+        exit 1
+esac
 
 # check free space in and display warning 
 disk_free_space=$(df -h / | tail -1 | awk '{print $4}' | sed s/G//)
@@ -104,9 +123,10 @@ else
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo
         echo
-        sudo pacman -S manjaro-tools-base manjaro-tools-iso manjaro-tools-pkg manjaro-tools-yaml --noconfirm
+        sudo pacman -Syy manjaro-tools-base manjaro-tools-iso manjaro-tools-pkg manjaro-tools-yaml --noconfirm
         echo
     else
+        echo
         echo
         echo "Cannot proceed without required Manjaro tools packages. Exiting..."
         exit 1
@@ -175,127 +195,129 @@ echo
 #     fi
 # fi
 
-# check if internet is available
-echo "Checking internet connection availability..."
-case "$(curl -s --max-time 10 -I https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
-    [23]) git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git' # 2> /dev/null)'
-        read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            echo
-            echo
-            sudo pacman-mirrors -f 5
-            echo
-            sudo pacman -Sy
-            echo
-            sudo pacman -Fy
-            echo
-        else
-            echo
-            echo
-        fi
+if [[ "$internet_avail" = true ]]; then
+    git_clone_profile='git clone https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile.git' # 2> /dev/null)'
+    
+    read -p "Update mirrors list for selecting best build mirror and profile kernel? " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
+        echo
+        sudo pacman-mirrors -f 5
+        echo
+        sudo pacman -Syy
+        echo
+        sudo pacman -Fyy
+        echo
+    else
+        echo
+        echo
+    fi
 
-        # select best build mirror
-        best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
+    # select best build mirror
+    best_server_match=$(grep '^Server = ' /etc/pacman.d/mirrorlist | head -1 | cut -c10- | sed "s|/\(un\)*stable/.*||")
+    
+    if [[ -r $target_conf_file && -w $target_conf_file ]]; then
+        cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "Profile build mirror $err_prepare_text"
         
-        if [[ -r $target_conf_file && -w $target_conf_file ]]; then
-            cat $target_conf_file | grep -q '# build_mirror=' && sed -i "s|# build_mirror=.*|build_mirror=${best_server_match}|" $target_conf_file || printf "Profile build mirror $err_prepare_text"
-            
-            current_build_mirror=$(cat $target_conf_file | grep -E '^build_mirror=' | sed "s|build_mirror=||")
-            
-            echo "Current profile build mirror - ${current_build_mirror}"
-            echo
-            
-            # select latest non-realtime kernel available in unstable repo
-            latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
-            cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text"
-            
-            if cat $target_conf_file | grep -q '^# kernel'; then
-                current_kernel=$(sed -n "/^# kernel/ s|# kernel=||p" $target_conf_file)
-            else
-                current_kernel=$(sed -n "/^kernel/ s|kernel=||p" $target_conf_file)
-            fi
-        fi
+        current_build_mirror=$(cat $target_conf_file | grep -E '^build_mirror=' | sed "s|build_mirror=||")
         
-        echo "Current profile kernel - ${current_kernel}"
+        echo "Current profile build mirror - ${current_build_mirror}"
         echo
         
+        # select latest non-realtime kernel available in unstable repo
+        latest_nonrt_kernel=$(wget -q -O - $best_server_match/unstable/core/x86_64/core.db.tar.gz | tar -tz | grep '^linux[4-9]' | grep -v 'headers' | grep -v 'desc' | sed "s|-.*||" | sort -Vr | head -n1)
+        cat $target_conf_file | grep -q '# kernel=' && sed -i "s|# kernel=.*|kernel=${latest_nonrt_kernel}|" $target_conf_file || printf "Profile kernel $err_prepare_text"
+        
+        if cat $target_conf_file | grep -q '^# kernel'; then
+            current_kernel=$(sed -n "/^# kernel/ s|# kernel=||p" $target_conf_file)
+        else
+            current_kernel=$(sed -n "/^kernel/ s|kernel=||p" $target_conf_file)
+        fi
+    fi
+    
+    echo "Current profile kernel - ${current_kernel}"
+    echo
+    
 #         if [[ -x $(which mhwd-kernel 2> /dev/null) ]]; then
 #             printf "Other v4.x kernels:\n"
 #             mhwd-kernel -l | cut -c6- | grep '^linux[4-9]' | grep -vw "${latest_nonrt_kernel}" | sort -Vr
 #         fi
 
 
-        # echo "Downloading build profile folder into current user's home folder..."
-        if [[ ! -d plasma-wayland-testing-manjaro-tools-profile/ ]]; then
-            eval $git_clone_profile
-            echo
+    # echo "Downloading build profile folder into current user's home folder..."
+    if [[ ! -d plasma-wayland-testing-manjaro-tools-profile/ ]]; then
+        eval $git_clone_profile
+        
+        if [[ $? -eq 0 ]]; then
+            default_profile_download=true
         fi
+        echo
+    fi
 
-        echo "Looking for available kernel modules and drivers..."
-        echo
+    echo "Looking for available kernel modules and drivers..."
+    echo
+    
+    available_kernel_modules=$(wget -q -O - ${best_server_match}/unstable/extra/x86_64/extra.db.tar.gz | tar -tz | grep -v 'desc' | grep ${current_kernel} | sed -r "s|-[0-9]+\.[0-9].*||" | sed -r "s|-[0-9]+\:[0-9].*||" | sed -r "s|-[0-9]{4}.*||" | sed "s|${current_kernel}|KERNEL|")
+    
+    if [[ -w $desktop_packages_file && -w $live_packages_file && -w $mhwd_packages_file ]]; then
+        # comment all modules and drivers
+        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
+        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
         
-        available_kernel_modules=$(wget -q -O - ${best_server_match}/unstable/extra/x86_64/extra.db.tar.gz | tar -tz | grep -v 'desc' | grep ${current_kernel} | sed -r "s|-[0-9]+\.[0-9].*||" | sed -r "s|-[0-9]+\:[0-9].*||" | sed -r "s|-[0-9]{4}.*||" | sed "s|${current_kernel}|KERNEL|")
+        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $live_packages_file
+        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $live_packages_file
         
-        if [[ -w $desktop_packages_file && -w $live_packages_file && -w $mhwd_packages_file ]]; then
-            # comment all modules and drivers
-            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
-            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $desktop_packages_file
-            
-            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $live_packages_file
-            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $live_packages_file
-            
-            sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
-            sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
-            
-            # uncomment only available modules
-            while read -r line; do
-                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $desktop_packages_file
-            done <<< $available_kernel_modules
-            
-            while read -r line; do
-                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $live_packages_file
-            done <<< $available_kernel_modules
-            
-            while read -r line; do
-                sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $mhwd_packages_file
-            done <<< $available_kernel_modules
+        sed -i "/^[^#].*# available-kernel-modules-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
+        sed -i "/^[^#].*# available-kernel-drivers-toggle$/ s|\(.*\)|# \1|" $mhwd_packages_file
+        
+        # uncomment only available modules
+        while read -r line; do
+            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $desktop_packages_file
+        done <<< $available_kernel_modules
+        
+        while read -r line; do
+            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $live_packages_file
+        done <<< $available_kernel_modules
+        
+        while read -r line; do
+            sed -i "/${line} .*# available-kernel-modules-toggle$/ s|^# \(.*\)${line}|\1${line}|" $mhwd_packages_file
+        done <<< $available_kernel_modules
 
-            available_kernel_drivers=$(sed "s|KERNEL-||" <<< $available_kernel_modules)
-            
-            # uncomment only available drivers
-            while read -r line; do
-                sed -i "/$line-utils .*# available-kernel-drivers-toggle$/ s|^# ||" $mhwd_packages_file
-            done <<< $available_kernel_drivers
+        available_kernel_drivers=$(sed "s|KERNEL-||" <<< $available_kernel_modules)
         
-            selected_kernel_modules=$(grep '^[^#].* # available-kernel-modules-toggle$' $desktop_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $live_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||")
-            
-            selected_kernel_modules=$(sort <<< $selected_kernel_modules | uniq)
-            
-            printf "Selected kernel modules:\n${selected_kernel_modules}"
-            echo
-            echo
-            
-            selected_kernel_drivers=$(grep '^[^#].* # available-kernel-drivers-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|# available-kernel-drivers-toggle$||")
-            
-            selected_kernel_drivers=$(sort <<< $selected_kernel_drivers | uniq)
-            
-            printf "Selected kernel drivers:\n${selected_kernel_drivers}"
-            echo
-            echo
-        else
-            echo "Unable to select available kernel modules and drivers"
-            echo
-        fi
-        ;;
+        # uncomment only available drivers
+        while read -r line; do
+            sed -i "/$line-utils .*# available-kernel-drivers-toggle$/ s|^# ||" $mhwd_packages_file
+        done <<< $available_kernel_drivers
+    
+        selected_kernel_modules=$(grep '^[^#].* # available-kernel-modules-toggle$' $desktop_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $live_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||"; grep '^[^#].* # available-kernel-modules-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|KERNEL-||"| sed "s|# available-kernel-modules-toggle$||")
         
-        *) echo "Unable to select best build mirror and latest profile kernel"
-        echo "They can be changed manually in manjaro tools configuration file in current user's home folder"
+        selected_kernel_modules=$(sort <<< $selected_kernel_modules | uniq)
+        
+        printf "Selected kernel modules:\n${selected_kernel_modules}"
         echo
-        echo "Unable to download build profile"
-        echo "It can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile"
         echo
-        ;;
-esac
+        
+        selected_kernel_drivers=$(grep '^[^#].* # available-kernel-drivers-toggle$' $mhwd_packages_file | sed "s|^>nonfree_default ||" | sed "s|^>nonfree_multilib ||" | sed "s|# available-kernel-drivers-toggle$||")
+        
+        selected_kernel_drivers=$(sort <<< $selected_kernel_drivers | uniq)
+        
+        printf "Selected kernel drivers:\n${selected_kernel_drivers}"
+        echo
+        echo
+    else
+        echo "Unable to select available kernel modules and drivers"
+        echo
+    fi
+    
+else
+    echo "Unable to select best build mirror and latest profile kernel"
+    echo "They can be changed manually in manjaro tools configuration file in current user's home folder"
+    echo
+    echo "Unable to download build profile"
+    echo "It can be obtained at https://github.com/notuxius/plasma-wayland-testing-manjaro-tools-profile"
+    echo
+fi
 
 err_profile_text="Cannot make modifications in manjaro tools profile configuration file\n"
 err_desktop_packages_min_text="Desktop packages file is already set for minimal profile - no modifications were made in it"
@@ -305,11 +327,18 @@ info_profile_command_text="Profile ISOs can be built with 'buildiso -p plasmaway
 
 OPTIND=1
 
+if [[ -z ${@} ]]; then
+    echo "Current profile - desktop packages and systemd services were not modified"
+    echo
+    echo "$info_rerun_text"
+    echo
+#         echo "$info_profile_command_text"
+#         echo
+fi
+
 while getopts "${opts}" arg; do
 
     if [[ -w $profile_conf_file ]]; then
-    
-
 
         case "${arg}" in
             m)
@@ -329,8 +358,8 @@ while getopts "${opts}" arg; do
                 sed -i "/^addgroups=/ s|,sys||" $profile_conf_file || printf "$err_profile_text"
                 echo "$info_rerun_text"
                 echo
-    #             echo "$info_profile_command_text"
-    #             echo
+#                 echo "$info_profile_command_text"
+#                 echo
                 ;;
             
             f)
@@ -338,37 +367,7 @@ while getopts "${opts}" arg; do
                 # change distribution release to ...codename-year.month.day.hour... version format
                 echo "Full profile - with some additional desktop packages and systemd services"
                 echo
-                ;;
-                
-            d)
-                if [[ -w plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
-                        date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
-                        if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
-                            echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
-                            echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
-                            echo
-                        else
-                            echo
-                            echo
-                        fi
-                        if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
-                            echo "Existing profile folder was removed from current user's home folder, will redownload..."
-                            echo
-                        else
-                            echo
-                            echo
-                        fi
-                        
-                        # echo "Downloading build profile folder into current user's home folder..."
-                        eval $git_clone_profile
-                        echo
-                else
-                    echo
-                    echo
-                fi
-                
-        
-    #             cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
+                #                 cat $desktop_packages_file | grep -q '^# .*# minimal-packages-toggle$' && sed -i 's|^# \(.*\)# minimal-packages-toggle$|\1# minimal-packages-toggle|g' $desktop_packages_file || echo "$err_desktop_packages_full_text"
 
                 sed -i 's|^.*extra=.*"|extra="true"|' $profile_conf_file
 
@@ -380,21 +379,42 @@ while getopts "${opts}" arg; do
                 sed -i "/sys/! s|\(^addgroups=.*[^\"]\)|\1,sys|" $profile_conf_file || printf "$err_profile_text"
                 echo "$info_rerun_text"
                 echo
-    #             echo "$info_profile_command_text"
-    #             echo
+#                 echo "$info_profile_command_text"
+#                 echo
                 ;;
+                
+#             d)
+#                 if [[ "$default_profile_download" = false ]]; then
+#                     if [[ -w plasma-wayland-testing-manjaro-tools-profile/ && ! -z $(ls -A plasma-wayland-testing-manjaro-tools-profile/ 2> /dev/null) ]]; then
+#                             date_time_stamp=$(date +%Y-%m-%d-%H-%M-%S)
+#                             if mkdir -p $(eval echo plasma-wayland-testing-manjaro-tools-profile-backups/) && tar -czf plasma-wayland-testing-manjaro-tools-profile-backups/plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz plasma-wayland-testing-manjaro-tools-profile/; then
+#                                 echo "Profile folder was backed up with name 'plasma-wayland-testing-manjaro-tools-profile-${date_time_stamp}.tar.gz'"
+#                                 echo "in current user's home 'plasma-wayland-testing-manjaro-tools-profile-backups' folder"
+#                                 echo
+#                             else
+#                                 echo
+#                                 echo
+#                             fi
+#                             if rm -rf plasma-wayland-testing-manjaro-tools-profile/; then
+#                                 echo "Existing profile folder was removed from current user's home folder, will download default profile..."
+#                                 echo
+#                             else
+#                                 echo
+#                                 echo
+#                             fi
+#                             
+#                             # echo "Downloading build profile folder into current user's home folder..."
+#                             eval $git_clone_profile
+#                             echo
+#                     else
+#                         echo
+#                         echo
+#                     fi
+#                 else
+#                     printf "Default profile is downloaded and will not be backed up\n\n"
+#                 fi
         esac
-        
-        if [[ -z ${@} ]]; then
-            echo "Current profile - desktop packages and systemd services were not modified"
-            echo
-            echo "$info_rerun_text"
-            echo
-    #         echo "$info_profile_command_text"
-    #         echo
-        fi
     fi
-
 done
 shift $((OPTIND-1))
 
