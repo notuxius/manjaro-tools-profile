@@ -32,6 +32,9 @@ Link to created ISOs with current master branch profile files and some older ver
 
 https://drive.google.com/drive/folders/1ptFf2tZYNC3i04aAL1l84TyABeI60QCZ
 
+Path to testing binary packages and PKGBUILDs:
+https://drive.google.com/drive/folders/1druF_SmDbNLgM2HwXzmFpVaCJHNslaNw
+
 For building official stable Netrunner Rolling ISOs - please refer to:
 
 https://github.com/netrunner-rolling/manjaro-tools-profile
