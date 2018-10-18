@@ -18,13 +18,13 @@ https://wiki.manjaro.org/index.php?title=Build_Manjaro_ISOs_with_buildiso
 
 'prepare-testing-config' script can be used for initial autoconfiguring of testing setup
 
-Use '-m', '-f' or '-d' options for toggling of minimal/full profile and it's redownloading. Exiting...
+Use '-m' or '-f' option for toggling of minimal or full profile building.
+If no option is specified - currently set profile will be build.
 
 For example:
+prepare-testing-config    use current profile for build,
 prepare-testing-config -m use minimal profile for build,
-prepare-testing-config -f use full profile for build,
-prepare-testing-config -md use minimal profile for build, backup, remove and redownload existing profile,
-prepare-testing-config -fd use full profile for build, backup, remove and redownload existing profile
+prepare-testing-config -f use full profile for build
 
 Profile ISOs can be built with 'buildiso -p plasmawaylandtest' command
 
